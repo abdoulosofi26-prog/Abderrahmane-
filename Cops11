@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>فنادق قريبة من شيراتون جراند الدوحة</title>
+  <style>
+    :root{
+      --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --brand:#06b6d4; --ok:#10b981; --warn:#f59e0b;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:"Tajawal", system-ui, -apple-system, Segoe UI, Roboto, Arial; background:linear-gradient(180deg,#0b1220,#0f172a 20%,#0b1220); color:#e5e7eb}
+    header{position:sticky; top:0; z-index:20; backdrop-filter:saturate(140%) blur(8px); background:rgba(15,23,42,.7); border-bottom:1px solid rgba(148,163,184,.15)}
+    .wrap{max-width:1100px; margin:auto; padding:16px}
+    h1{margin:6px 0 2px; font-size:22px}
+    .sub{color:var(--muted); font-size:14px}
+    .grid{display:grid; grid-template-columns: 280px 1fr; gap:18px; padding:18px}
+    @media (max-width:860px){.grid{grid-template-columns:1fr}}
+    .panel{background:var(--panel); border:1px solid rgba(148,163,184,.12); border-radius:14px}
+    .filters{padding:16px}
+    .filters h3{margin:0 0 8px; font-size:16px}
+    .field{margin:12px 0}
+    label{display:block; margin-bottom:6px; color:#cbd5e1; font-size:14px}
+    input[type=number], select, input[type=text]{width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(148,163,184,.2); background:#0b1220; color:#e5e7eb}
+    .inline{display:flex; gap:10px; align-items:center}
+    .inline input[type=checkbox]{transform:scale(1.1)}
+    .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; border:1px solid rgba(148,163,184,.25); background:#0b1220; color:#e5e7eb; cursor:pointer}
+    .btn.primary{background:linear-gradient(135deg,#0891b2,#06b6d4); border:none; color:#04151f}
+    .results{padding:8px}
+    .cards{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; padding:10px}
+    @media (max-width:860px){.cards{grid-template-columns:1fr}}
+    .card{display:flex; gap:12px; padding:12px; border-radius:14px; background:#0b1220; border:1px solid rgba(148,163,184,.15)}
+    .thumb{width:92px; height:92px; border-radius:12px; background:#111827; overflow:hidden; flex:0 0 auto; border:1px solid rgba(148,163,184,.1)}
+    .thumb img{width:100%; height:100%; object-fit:cover}
+    .title{font-weight:700; font-size:16px; margin:0 0 4px}
+    .meta{font-size:13px; color:#94a3b8}
+    .tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px}
+    .tag{font-size:12px; padding:4px 8px; border-radius:999px; background:rgba(6,182,212,.12); color:#67e8f9; border:1px solid rgba(6,182,212,.25)}
+    .price{margin-top:8px; font-weight:700}
+    .ok{color:var(--ok)}
+    .warn{color:var(--warn)}
+    .badge{display:inline-block; padding:4px 8px; border-radius:8px; font-size:12px; background:rgba(16,185,129,.12); color:#6ee7b7; border:1px solid rgba(16,185,129,.25)}
+    .empty{padding:22px; text-align:center; color:#94a3b8}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>معاينة واجهة: فنادق ضمن 10 كم من شيراتون جراند الدوحة</h1>
+      <div class="sub">نقطة مرجعية: Al Corniche, West Bay — محطة المترو الأقرب: DECC (الخط الأحمر)</div>
+    </div>
+  </header>
+
+  <main class="wrap grid">
+    <!-- Filters -->
+    <section class="panel filters" aria-label="مرشحات البحث">
+      <h3>مرشحات البحث</h3>
+      <div class="field">
+        <label for="maxPrice">الميزانية القصوى (يورو/ليلة)</label>
+        <input id="maxPrice" type="number" min="30" step="5" value="100" />
+      </div>
+      <div class="field">
+        <label for="roomType">نوع الغرفة</label>
+        <select id="roomType">
+          <option value="any">أي نوع</option>
+          <option value="single">فردية</option>
+          <option value="triple">ثلاثية/شقة</option>
+        </select>
+      </div>
+      <div class="field inline">
+        <input id="nearMetro" type="checkbox" checked />
+        <label for="nearMetro">بالقرب من محطة مترو (DECC أو الكورنيش)</label>
+      </div>
+      <div class="field">
+        <label for="search">بحث بالاسم</label>
+        <input id="search" type="text" placeholder="ابحث عن فندق..." />
+      </div>
+      <div class="field inline">
+        <button class="btn primary" id="apply">تطبيق المرشحات</button>
+        <button class="btn" id="reset">إعادة الضبط</button>
+      </div>
+      <div class="field">
+        <span class="badge">تجريبي — أسعار تقريبية قابلة للتحديث عبر API لاحقاً</span>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section class="panel results" aria-label="قائمة الفنادق">
+      <div id="count" class="sub" style="padding:10px 14px"></div>
+      <div id="cards" class="cards"></div>
+      <div id="empty" class="empty" style="display:none">لا توجد نتائج تطابق المرشحات الحالية.</div>
+    </section>
+  </main>
+
+  <script>
+    // بيانات تجريبية مختصرة (قابلة للاستبدال ببيانات مباشرة من منصات الحجز)
+    const HOTELS = [
+      {name:"voco Doha West Bay Suites", metro:"DECC", type:"triple", price:95, km:1.6, img:"https://images.unsplash.com/photo-1551776235-dde6d4829808?q=80&w=600&auto=format&fit=crop"},
+      {name:"Dusit Hotel & Suites - Doha", metro:"DECC", type:"triple", price:110, km:1.9, img:"https://images.unsplash.com/photo-1501117716987-c8e008bc5dff?q=80&w=600&auto=format&fit=crop"},
+      {name:"Wyndham Grand Doha West Bay Beach", metro:"DECC", type:"single", price:120, km:1.4, img:"https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=600&auto=format&fit=crop"},
+      {name:"City Centre Rotana Doha", metro:"DECC", type:"single", price:140, km:1.2, img:"https://images.unsplash.com/photo-1501117716987-c8e008bc5dff?q=80&w=600&auto=format&fit=crop"},
+      {name:"Marriott Marquis City Center Doha", metro:"DECC", type:"single", price:150, km:1.3, img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=600&auto=format&fit=crop"},
+      {name:"Element City Center Doha", metro:"DECC", type:"triple", price:90, km:1.5, img:"https://images.unsplash.com/photo-1501117716987-c8e008bc5dff?q=80&w=600&auto=format&fit=crop"},
+      {name:"DoubleTree by Hilton Doha - Old Town", metro:"Corniche", type:"single", price:85, km:3.3, img:"https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=600&auto=format&fit=crop"},
+      {name:"Saraya Corniche Hotel", metro:"Corniche", type:"triple", price:70, km:3.4, img:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=600&auto=format&fit=crop"},
+      {name:"Aleph Doha Residences", metro:"DECC", type:"triple", price:100, km:2.1, img:"https://images.unsplash.com/photo-1501117716987-c8e008bc5dff?q=80&w=600&auto=format&fit=crop"},
+      {name:"Hilton Doha", metro:"DECC", type:"single", price:160, km:0.9, img:"https://images.unsplash.com/photo-1528909514045-2fa4ac7a08ba?q=80&w=600&auto=format&fit=crop"}
+    ];
+
+    const els = {
+      maxPrice: document.getElementById('maxPrice'),
+      roomType: document.getElementById('roomType'),
+      nearMetro: document.getElementById('nearMetro'),
+      search:   document.getElementById('search'),
+      apply:    document.getElementById('apply'),
+      reset:    document.getElementById('reset'),
+      cards:    document.getElementById('cards'),
+      empty:    document.getElementById('empty'),
+      count:    document.getElementById('count')
+    };
+
+    function pass(h){
+      const max = Number(els.maxPrice.value) || 9999;
+      const type = els.roomType.value;
+      const near = els.nearMetro.checked;
+      const q = (els.search.value||'').trim().toLowerCase();
+      const okPrice = h.price <= max;
+      const okType = type==='any' || h.type===type;
+      const okMetro = !near || ['DECC','Corniche'].includes(h.metro);
+      const okSearch = !q || h.name.toLowerCase().includes(q);
+      return okPrice && okType && okMetro && okSearch;
+    }
+
+    function render(){
+      els.cards.innerHTML = '';
+      const items = HOTELS.filter(pass).sort((a,b)=>a.price-b.price);
+      els.count.textContent = `النتائج: ${items.length} فندق/فنادق`;
+      els.empty.style.display = items.length? 'none':'block';
+      for(const h of items){
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="thumb"><img alt="${h.name}" src="${h.img}" loading="lazy"></div>
+          <div>
+            <div class="title">${h.name}</div>
+            <div class="meta">≈ ${h.km.toFixed(1)} كم من الشيراتون • محطة مترو: ${h.metro}</div>
+            <div class="tags">
+              <span class="tag">نوع: ${h.type==='single'?'فردية':'ثلاثية/شقة'}</span>
+              <span class="tag">نطاق 10 كم</span>
+            </div>
+            <div class="price ${h.price<=100?'ok':'warn'}">€${h.price} / ليلة</div>
+          </div>`;
+        els.cards.appendChild(card);
+      }
+    }
+
+    els.apply.addEventListener('click', render);
+    els.reset.addEventListener('click', ()=>{
+      els.maxPrice.value = 100; els.roomType.value='any'; els.nearMetro.checked=true; els.search.value=''; render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
