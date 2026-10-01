@@ -156,6 +156,15 @@ textarea{width:100%;min-height:150px;font-family:var(--f-es);font-size:1.05rem;d
 .proj{background:var(--cobalt-soft);border-radius:10px;padding:12px 14px}
 .proj b{font-family:var(--f-display);color:var(--cobalt)}
 .done-tag{font-size:.8rem;color:var(--ok)}
+/* voice settings */
+.stat-btn{color:#fff;cursor:pointer}
+.stat-btn:hover,.stat-btn[aria-expanded="true"]{background:#ffffff38}
+.voice{display:grid;gap:12px;margin-top:14px}
+.vrow{display:grid;grid-template-columns:minmax(110px,150px) 1fr;gap:12px;align-items:center}
+.vrow select{min-width:0;width:100%}
+.vrow input[type=range]{width:100%;accent-color:var(--cobalt)}
+.vrow b{font-variant-numeric:tabular-nums;color:var(--cobalt);font-weight:600}
+@media (max-width:520px){.vrow{grid-template-columns:1fr}}
 /* exams */
 .exam-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
 .exam-card{display:grid;gap:4px;text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:14px 16px}
@@ -194,8 +203,19 @@ footer{color:var(--muted);font-size:.9rem;text-align:center;margin-top:28px}
     <div class="stats">
       <span class="stat">نقاطك: <b id="pts">0</b></span>
       <span class="stat">كلمات حفظتها: <b id="known">0</b></span>
+      <button class="stat stat-btn" id="voiceBtn" aria-expanded="false" aria-controls="voicePanel">إعدادات الصوت</button>
     </div>
   </header>
+
+  <div class="panel voice" id="voicePanel" hidden>
+    <div class="row" style="justify-content:space-between"><h3>إعدادات الصوت</h3><button class="btn ghost" id="voiceClose">إغلاق</button></div>
+    <label class="vrow" for="vVoice"><span>الصوت</span><select id="vVoice"></select></label>
+    <p class="hint" id="vNote"></p>
+    <label class="vrow" for="vRate"><span>السرعة <b id="vRateV"></b></span><input type="range" id="vRate" min="0.5" max="1.3" step="0.05"></label>
+    <label class="vrow" for="vPitch"><span>طبقة الصوت <b id="vPitchV"></b></span><input type="range" id="vPitch" min="0.5" max="1.8" step="0.05"></label>
+    <div class="chips" id="vPresets"></div>
+    <div class="row"><button class="btn" id="vTest">جرّب الصوت</button><button class="btn ghost" id="vReset">الإعدادات الأصلية</button></div>
+  </div>
 
   <nav class="tabs" role="tablist" aria-label="أقسام الدفتر">
     <button class="tab" role="tab" id="t-units" aria-controls="p-units" aria-selected="true">دروس الكتاب</button>
@@ -321,8 +341,33 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 /* speech */
-function say(t){try{if(!("speechSynthesis" in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="es-ES";u.rate=.85;
-  const v=speechSynthesis.getVoices().find(v=>/^es/i.test(v.lang));if(v)u.voice=v;speechSynthesis.speak(u)}catch(e){}}
+const VDEF={voice:"",rate:.85,pitch:1};
+let vset=Object.assign({},VDEF,store.get("es_voice",{}));
+const esVoices=()=>{try{return speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang))}catch(e){return[]}};
+function say(t){try{if(!("speechSynthesis" in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);
+  const vs=esVoices(),v=vs.find(x=>x.voiceURI===vset.voice)||vs.find(x=>/es-ES/i.test(x.lang))||vs[0];
+  u.lang=v?v.lang:"es-ES";if(v)u.voice=v;u.rate=vset.rate;u.pitch=vset.pitch;speechSynthesis.speak(u)}catch(e){}}
+const PRESETS=[["عادي",.85,1],["بطيء للتعلّم",.6,1],["صوت أعمق",.85,.7],["صوت أرفع",.85,1.4],["سريع كالمتحدث الأصلي",1.1,1]];
+function fillVoices(){const sel=$("vVoice"),vs=esVoices();
+  const country={ES:"إسبانيا",MX:"المكسيك",US:"الولايات المتحدة",AR:"الأرجنتين",CO:"كولومبيا",CL:"تشيلي"};
+  sel.innerHTML=vs.length?vs.map(v=>{const c=(v.lang.split(/[-_]/)[1]||"").toUpperCase();return `<option value="${esc(v.voiceURI)}">${esc(v.name)}${country[c]?" — "+country[c]:""}</option>`}).join(""):'<option value="">الصوت الافتراضي</option>';
+  if(vs.some(v=>v.voiceURI===vset.voice))sel.value=vset.voice;
+  $("vNote").textContent=vs.length?("أصوات إسبانية متوفرة على هذا الجهاز: "+vs.length+"."):"لا يوجد صوت إسباني مثبّت على هذا الجهاز، لذلك يُستعمل الصوت الافتراضي. يمكنك تثبيت صوت إسباني من إعدادات الهاتف أو الحاسوب (تحويل النص إلى كلام)."}
+function syncVoiceUI(){$("vRate").value=vset.rate;$("vPitch").value=vset.pitch;$("vRateV").textContent="×"+(+vset.rate).toFixed(2);$("vPitchV").textContent=(+vset.pitch).toFixed(2);
+  [...$("vPresets").children].forEach((b,i)=>b.setAttribute("aria-pressed",PRESETS[i][1]==vset.rate&&PRESETS[i][2]==vset.pitch))}
+const saveV=()=>{store.set("es_voice",vset);syncVoiceUI()};
+$("vPresets").innerHTML=PRESETS.map(p=>`<button class="chip" aria-pressed="false">${p[0]}</button>`).join("");
+[...$("vPresets").children].forEach((b,i)=>b.onclick=()=>{vset.rate=PRESETS[i][1];vset.pitch=PRESETS[i][2];saveV();say("Hola, ¿qué tal? Me llamo Lina.")});
+$("vVoice").onchange=()=>{vset.voice=$("vVoice").value;saveV();say("Hola, ¿qué tal?")};
+$("vRate").oninput=()=>{vset.rate=+$("vRate").value;saveV()};
+$("vPitch").oninput=()=>{vset.pitch=+$("vPitch").value;saveV()};
+$("vRate").onchange=$("vPitch").onchange=()=>say("Buenos días");
+$("vTest").onclick=()=>say("Hola, me llamo Lina. Estudio español en el instituto. ¡Mucho gusto!");
+$("vReset").onclick=()=>{vset=Object.assign({},VDEF);saveV();fillVoices()};
+const toggleV=open=>{$("voicePanel").hidden=!open;$("voiceBtn").setAttribute("aria-expanded",open);if(open){fillVoices();syncVoiceUI()}};
+$("voiceBtn").onclick=()=>toggleV($("voicePanel").hidden);$("voiceClose").onclick=()=>toggleV(false);
+try{speechSynthesis.onvoiceschanged=()=>{if(!$("voicePanel").hidden)fillVoices()}}catch(e){}
+syncVoiceUI();
 
 /* points */
 let pts=store.get("es_pts",0), known=store.get("es_known",{});
