@@ -156,6 +156,28 @@ textarea{width:100%;min-height:150px;font-family:var(--f-es);font-size:1.05rem;d
 .proj{background:var(--cobalt-soft);border-radius:10px;padding:12px 14px}
 .proj b{font-family:var(--f-display);color:var(--cobalt)}
 .done-tag{font-size:.8rem;color:var(--ok)}
+/* exams */
+.exam-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.exam-card{display:grid;gap:4px;text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:14px 16px}
+.exam-card:hover{border-color:var(--cobalt)}
+.exam-card .eyebrow{font-size:.8rem;color:var(--saffron);font-weight:600}
+.exam-card .es{font-size:1.3rem;font-weight:700;color:var(--cobalt);text-align:left}
+.ex-part{display:grid;gap:10px;border-top:2px solid var(--line);padding-top:14px}
+.ex-part .pts{font-family:var(--f-body);font-size:.9rem;color:var(--muted);font-weight:400}
+.ex-group{display:grid;gap:4px}
+.ex-group h4{margin:0;font-size:1rem;color:var(--cobalt)}
+.opt[aria-pressed="true"]{border-color:var(--cobalt);background:var(--cobalt-soft);font-weight:600}
+.in-q{display:grid;grid-template-columns:1fr minmax(120px,220px);gap:10px;align-items:center}
+.in-q input{width:100%;min-width:0;font-family:var(--f-es);font-size:1.05rem;direction:ltr;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.in-q input.good{border-color:var(--ok);background:var(--ok-soft)}
+.in-q input.near{border-color:var(--saffron);background:var(--saffron-soft)}
+.in-q input.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.fb{font-size:.9rem;font-family:var(--f-body)}
+.fb.bad{color:var(--bad)} .fb.warn{color:var(--saffron)}
+.fb:empty{display:none}
+.result{display:grid;gap:8px;background:var(--sunk);border-radius:12px;padding:16px}
+.btn:disabled{opacity:.5;cursor:default}
+@media (max-width:520px){.in-q{grid-template-columns:1fr}}
 footer{color:var(--muted);font-size:.9rem;text-align:center;margin-top:28px}
 
 @media (max-width:520px){
@@ -181,6 +203,7 @@ footer{color:var(--muted);font-size:.9rem;text-align:center;margin-top:28px}
     <button class="tab" role="tab" id="t-conj" aria-controls="p-conj" aria-selected="false">التصريف</button>
     <button class="tab" role="tab" id="t-gram" aria-controls="p-gram" aria-selected="false">القواعد والنطق</button>
     <button class="tab" role="tab" id="t-read" aria-controls="p-read" aria-selected="false">القراءة والكتابة</button>
+    <button class="tab" role="tab" id="t-exam" aria-controls="p-exam" aria-selected="false">الاختبارات</button>
     <button class="tab" role="tab" id="t-quiz" aria-controls="p-quiz" aria-selected="false">اختبار سريع</button>
   </nav>
 
@@ -266,6 +289,12 @@ footer{color:var(--muted);font-size:.9rem;text-align:center;margin-top:28px}
       <textarea id="essay" lang="es" placeholder="Hola, me llamo ..."></textarea>
       <ul class="check" id="essayCheck"></ul>
     </div>
+  </section>
+
+  <!-- EXAMS -->
+  <section role="tabpanel" id="p-exam" aria-labelledby="t-exam" hidden>
+    <p class="lead">ثلاثة اختبارات فصلية على منوال اختبارات الثانوية، تُصحَّح آليًا وتُعطي علامة من 20.</p>
+    <article class="panel unit" id="examBox"></article>
   </section>
 
   <!-- QUIZ -->
@@ -563,6 +592,113 @@ function renderUnit(){const u=UNITS.find(x=>x.n===curUnit)||UNITS[1];
     if(answered===u.ex.length&&right>=4&&!unitDone[u.n]){unitDone[u.n]=1;store.set("es_units",unitDone);renderUnitChips()}}));
 }
 renderUnitChips();renderUnit();
+/* ---------- EXAMS (one per term, bac-style: comprensión / competencia lingüística / expresión escrita) ---------- */
+const TF=(q,a)=>({type:"mc",q,opts:a?["Verdadero","Falso"]:["Falso","Verdadero"],keep:true,pts:.5});
+const MC=(q,opts,pts=1)=>({type:"mc",q,opts,pts});
+const IN=(q,a,pts=1)=>({type:"in",q,a:[].concat(a),pts});
+const EXAMS=[
+{id:"t1",term:"الفصل الأول",units:"الوحدات 0 – 2",title:"Lina y su mundo",
+ text:"Me llamo Lina y tengo dieciséis años. Vivo en Tlemcen, una ciudad bonita del oeste de Argelia. Estudio en el instituto Ibn Jaldún, en segundo curso de lenguas extranjeras. Mi instituto es grande: tiene veinte aulas, dos laboratorios, una biblioteca y un patio con árboles. Mis compañeros son simpáticos y trabajadores. Mi mejor amiga se llama Sara; es alta, morena y tiene los ojos verdes. Vivimos en el mismo barrio, cerca del mercado. En mi familia somos cinco: mis padres, mis dos hermanos y yo. Mi padre es médico y mi madre es profesora de francés. Nuestro piso tiene tres dormitorios, un salón, una cocina y un baño. Por la tarde, después de las clases, hago los deberes en mi dormitorio.",
+ parts:[
+  {t:"Comprensión del texto",pts:7,groups:[
+   {t:"A. Verdadero o falso",items:[TF("Lina vive en Orán.",false),TF("El instituto tiene una biblioteca.",true),TF("Sara tiene los ojos negros.",false),TF("La madre de Lina es profesora.",true)]},
+   {t:"B. Elige la respuesta correcta",items:[MC("¿Cuántos años tiene Lina?",["dieciséis","quince","diecisiete"]),MC("¿Dónde viven Lina y Sara?",["cerca del mercado","lejos del instituto","en Orán"]),MC("¿Cuántas personas hay en la familia de Lina?",["cinco","cuatro","tres"])]},
+   {t:"C. Busca en el texto",items:[IN("El contrario de «pequeño»:","grande"),IN("El contrario de «baja»:","alta")]}]},
+  {t:"Competencia lingüística",pts:7,groups:[
+   {t:"A. Conjuga los verbos en presente",items:[IN("Lina (estudiar) ___ en el instituto.","estudia",.75),IN("Nosotros (vivir) ___ en Tlemcen.","vivimos",.75),IN("Yo (tener) ___ dieciséis años.","tengo",.75),IN("Mis compañeros (ser) ___ simpáticos.","son",.75)]},
+   {t:"B. Elige la forma correcta",items:[MC("___ padres trabajan mucho.",["Mis","Mi","Tu"],.5),MC("El mercado ___ cerca de mi casa.",["está","es","hay"],.5),MC("En el instituto ___ dos laboratorios.",["hay","están","son"],.5),MC("La clase empieza a las ocho y ___.",["media","medio","mitad"],.5)]},
+   {t:"C. Pon en plural",items:[IN("el alumno simpático →","los alumnos simpáticos"),IN("la profesora joven →","las profesoras jóvenes")]}]}],
+ write:{prompt:"Presenta a tu familia y describe tu casa en 6 a 8 líneas.",
+  check:[["تقديم العائلة (mi familia / somos)",/mi familia|somos/i],["أفراد العائلة (mi padre / mi madre / hermano)",/mi padre|mi madre|herman[oa]/i],["الوصف بـ ser أو tener",/\b(es|son|tiene|tienen)\b/i],["المكان (vivo / vivimos / hay)",/\b(vivo|vivimos|hay)\b/i],["غرف البيت",/dormitorio|cocina|sal[oó]n|baño/i],["40 كلمة على الأقل",40]],
+  model:"En mi familia somos seis: mis padres, mis tres hermanos y yo. Mi padre se llama Ahmed; es alto y muy trabajador. Mi madre es simpática y tiene los ojos negros. Vivimos en Blida, en un piso grande cerca del instituto. En nuestro piso hay cuatro dormitorios, un salón, una cocina y dos baños. Mi habitación favorita es el salón porque allí hablamos y comemos juntos."}},
+{id:"t2",term:"الفصل الثاني",units:"الوحدتان 3 – 4",title:"Un día de Karim",
+ text:"Me llamo Karim. Todos los días me levanto a las seis y media, me ducho y desayuno con mi familia: pan, aceite de oliva y un vaso de leche. Después me visto y voy al instituto a pie. Las clases empiezan a las ocho y vuelvo a casa a las cinco. Los sábados voy al mercado con mi madre. Allí compramos frutas y verduras. Las naranjas son baratas, pero la carne es cara. Esta semana estoy enfermo: me duele la garganta y tengo fiebre. El médico dice que tengo que descansar y beber mucha agua. También dice que hay que comer fruta y hacer deporte para estar sano. En mi instituto, los alumnos reciclan el papel y el plástico porque quieren proteger el medio ambiente.",
+ parts:[
+  {t:"Comprensión del texto",pts:7,groups:[
+   {t:"A. Verdadero o falso",items:[TF("Karim se levanta a las siete.",false),TF("Karim va al instituto en autobús.",false),TF("Las naranjas son baratas.",true),TF("Esta semana Karim tiene fiebre.",true)]},
+   {t:"B. Elige la respuesta correcta",items:[MC("¿Qué desayuna Karim?",["pan, aceite y leche","café y queso","arroz y pescado"]),MC("¿Qué le duele a Karim?",["la garganta","la cabeza","el estómago"]),MC("¿Qué reciclan los alumnos?",["el papel y el plástico","el agua","la ropa"])]},
+   {t:"C. Busca en el texto",items:[IN("El contrario de «barata»:","cara"),IN("Un sinónimo de «doctor»:",["médico","el médico"])]}]},
+  {t:"Competencia lingüística",pts:7,groups:[
+   {t:"A. Conjuga los verbos en presente",items:[IN("Yo (levantarse) ___ temprano.","me levanto",.75),IN("Las clases (empezar) ___ a las ocho.","empiezan",.75),IN("Nosotros (volver) ___ a casa a las cinco.","volvemos",.75),IN("Mi hermano (vestirse) ___ rápido.","se viste",.75)]},
+   {t:"B. Elige la forma correcta",items:[MC("Me ___ los pies.",["duelen","duele","dolor"],.5),MC("¿Cuánto ___ un kilo de naranjas?",["cuesta","cuestan","costa"],.5),MC("Para estar sano ___ dormir bien.",["hay que","hay","tiene"],.5),MC("Tú ___ que estudiar más.",["tienes","hay","debes"],.5)]},
+   {t:"C. Pon el verbo en imperativo (tú)",items:[IN("(reciclar) ¡___ el plástico!","recicla"),IN("(hacer) ¡___ deporte!","haz")]}]}],
+ write:{prompt:"Escribe 6 a 8 líneas con consejos para cuidar la salud y proteger el planeta.",
+  check:[["الواجب العام (hay que)",/hay que/i],["الواجب الشخصي (tienes que / debes)",/tienes que|debes|tenemos que|debemos/i],["فعل أمر واحد على الأقل",/\b(recicla|come|bebe|haz|apaga|ahorra|camina|duerme|cuida|protege|usa)\b/i],["الصحة (salud / sano)",/salud|san[oa]/i],["البيئة (planeta / medio ambiente)",/planeta|medio ambiente|naturaleza/i],["40 كلمة على الأقل",40]],
+  model:"Para estar sanos, hay que comer fruta y verdura todos los días. También tenemos que beber mucha agua y dormir ocho horas. Haz deporte tres veces por semana y camina al instituto. Para proteger el planeta, debes reciclar el papel y el plástico. ¡Apaga la luz cuando sales de tu habitación y ahorra agua! Si cuidamos el medio ambiente, cuidamos también nuestra salud."}},
+{id:"t3",term:"الفصل الثالث",units:"الوحدتان 5 – 6",title:"El viaje de Yasmina",
+ text:"El verano pasado, Yasmina viajó a España con sus padres. Fueron en barco de Orán a Alicante y después tomaron el tren a Granada. Allí visitaron la Alhambra, un palacio construido en la época de al-Ándalus. Yasmina hizo muchas fotos con su móvil y las compartió en las redes sociales. Sus amigos escribieron muchos comentarios. Según Yasmina, viajar es más interesante que ver vídeos en internet, porque así conoces otras culturas y costumbres. Este año ha estudiado mucho y ha aprobado todos sus exámenes. El año que viene va a visitar Córdoba para ver la famosa Mezquita.",
+ parts:[
+  {t:"Comprensión del texto",pts:7,groups:[
+   {t:"A. Verdadero o falso",items:[TF("Yasmina viajó sola.",false),TF("Fueron a Granada en tren.",true),TF("Yasmina prefiere ver vídeos en internet.",false),TF("Yasmina ha aprobado sus exámenes.",true)]},
+   {t:"B. Elige la respuesta correcta",items:[MC("¿Cómo fueron de Orán a Alicante?",["en barco","en avión","en coche"]),MC("¿Qué monumento visitaron en Granada?",["la Alhambra","la Mezquita","la Giralda"]),MC("¿Qué ciudad va a visitar el año que viene?",["Córdoba","Sevilla","Madrid"])]},
+   {t:"C. Busca en el texto",items:[IN("Un verbo en pretérito perfecto:",["ha estudiado","ha aprobado"]),IN("El contrario de «aburrido»:","interesante")]}]},
+  {t:"Competencia lingüística",pts:7,groups:[
+   {t:"A. Conjuga los verbos en el tiempo correcto",items:[IN("Ayer yo (visitar) ___ el museo.","visité",.75),IN("El año pasado nosotros (ir) ___ a Túnez.","fuimos",.75),IN("Mis padres (hacer) ___ un viaje en 2024.","hicieron",.75),IN("Hoy yo (enviar) ___ tres mensajes.","he enviado",.75)]},
+   {t:"B. Elige la forma correcta",items:[MC("El avión es ___ rápido que el tren.",["más","tan","mejor"],.5),MC("Viajar es ___ que quedarse en casa.",["mejor","más bueno","bien"],.5),MC("El año que viene ___ a visitar México.",["voy","fui","he"],.5),MC("¿Has ___ la Alhambra?",["visto","vido","ver"],.5)]},
+   {t:"C. Completa",items:[IN("(viajar, futuro) Yo ___ a España en 2027.","viajaré"),IN("(escribir) Hoy he ___ una postal.","escrito")]}]}],
+ write:{prompt:"Escribe una postal (6 a 8 líneas) a un amigo para contarle un viaje.",
+  check:[["التحية (Querido / Hola)",/querid[oa]|hola/i],["أفعال في الماضي (fui, visité...)",/\b(fui|fuimos|visit[eé]|visitamos|viaj[eé]|viajamos|lleg[uú][eé]|llegamos|com[ií]|comimos)\b/i],["وسيلة النقل",/barco|avi[oó]n|tren|coche|autob[uú]s/i],["مدينة أو معلم",/granada|sevilla|c[oó]rdoba|madrid|barcelona|alhambra|mezquita|monumento|museo/i],["الختام (Un abrazo / Hasta pronto)",/abrazo|besos|hasta pronto|saludos/i],["40 كلمة على الأقل",40]],
+  model:"¡Hola, Samir! Te escribo desde Sevilla. Llegamos el lunes en avión desde Argel. Ayer visitamos la Giralda y el Alcázar: ¡son monumentos preciosos! También fuimos en tren a Córdoba para ver la Mezquita. La comida es muy buena y la gente es simpática. Vamos a volver a casa el sábado. ¡Hasta pronto! Un abrazo, Nadir."}}
+];
+const norm=s=>String(s).toLowerCase().replace(/[.,;:!¡?¿«»"]/g,"").replace(/\s+/g," ").trim();
+let exBest=store.get("es_exbest",{}), curExam=null;
+function renderExamList(){
+  $("examBox").innerHTML=`<div class="exam-list">${EXAMS.map(e=>`<button class="exam-card" data-e="${e.id}">
+    <span class="eyebrow">${e.term} · ${e.units}</span><span class="es" lang="es">${e.title}</span>
+    <span class="hint">${exBest[e.id]!=null?"أفضل نتيجة: "+exBest[e.id]+" / 20":"لم يُجرَ بعد"}</span></button>`).join("")}</div>
+   <p class="note">كل اختبار على منوال اختبارات الفصل: نص للفهم (7 نقاط)، كفاءة لغوية (7 نقاط)، تعبير كتابي (6 نقاط). المدة المقترحة: ساعة ونصف. أجب عن كل الأسئلة ثم اضغط «صحّح الاختبار».</p>`;
+  $("examBox").querySelectorAll(".exam-card").forEach(b=>b.onclick=()=>{curExam=EXAMS.find(e=>e.id===b.dataset.e);renderExam()});
+}
+function renderExam(){const e=curExam;let k=0;
+  const item=it=>{const id=e.id+"-"+(k++);it._id=id;
+    if(it.type==="mc"){const o=it.keep?it.opts.map((x,j)=>[x,j]).sort((a,b)=>a[0]==="Verdadero"?-1:1):shuffle(it.opts.map((x,j)=>[x,j]));
+      return `<div class="ex-q"><span class="es" lang="es">${esc(it.q)}</span><div class="opts" data-id="${id}">${o.map(([x,j])=>`<button class="opt" data-j="${j}" lang="es" aria-pressed="false">${esc(x)}</button>`).join("")}</div><span class="fb" id="fb-${id}"></span></div>`}
+    return `<div class="ex-q"><label class="in-q" for="in-${id}"><span class="es" lang="es">${esc(it.q)}</span><input id="in-${id}" lang="es" autocomplete="off" autocapitalize="off" spellcheck="false"></label><span class="fb" id="fb-${id}"></span></div>`};
+  $("examBox").innerHTML=`<div class="row" style="justify-content:space-between"><button class="btn ghost" id="exBack">← كل الاختبارات</button><span class="counter">${e.term} · ${e.units}</span></div>
+   <header class="unit-head"><div class="eyebrow">Examen del ${e.term}</div><h2 class="es" lang="es">${e.title}</h2></header>
+   <div class="row" style="justify-content:space-between"><h3>النص</h3><button class="spk" id="exSay" aria-label="استمع للنص"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg></button></div>
+   <p class="text es" lang="es">${e.text}</p>
+   ${e.parts.map(p=>`<section class="ex-part"><h3><span class="es" lang="es">${p.t}</span> <span class="pts">(${p.pts} ن)</span></h3>${p.groups.map(g=>`<div class="ex-group"><h4 class="es" lang="es">${g.t}</h4>${g.items.map(item).join("")}</div>`).join("")}</section>`).join("")}
+   <section class="ex-part"><h3><span class="es" lang="es">Expresión escrita</span> <span class="pts">(6 ن)</span></h3>
+     <p class="es" lang="es" style="font-weight:600">${e.write.prompt}</p>
+     <div class="keys" id="exKeys"></div>
+     <textarea id="w-${e.id}" lang="es" placeholder="Escribe aquí..."></textarea>
+     <div class="row" style="justify-content:space-between"><span class="hint" id="wc"></span></div>
+     <ul class="check" id="wcheck"></ul>
+     <details class="g" id="modelBox" hidden><summary>نموذج للتعبير الكتابي</summary><div class="body"><p class="es" lang="es">${e.write.model}</p></div></details></section>
+   <div class="row"><button class="btn" id="exGrade">صحّح الاختبار</button><button class="btn ghost" id="exReset">أعد الاختبار</button></div>
+   <div id="exResult" aria-live="polite"></div>`;
+  $("exBack").onclick=renderExamList;$("exSay").onclick=()=>say(e.text);
+  $("examBox").querySelectorAll(".opts").forEach(box=>box.addEventListener("click",ev=>{const b=ev.target.closest(".opt");if(!b||box.dataset.locked)return;box.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b))}));
+  const ta=$("w-"+e.id);let lastF=ta;ta.value=store.get("es_w_"+e.id,"");
+  $("examBox").querySelectorAll("input,textarea").forEach(x=>x.addEventListener("focus",()=>lastF=x));
+  "á é í ó ú ñ ¿ ¡".split(" ").forEach(c=>{const b=document.createElement("button");b.type="button";b.textContent=c;b.onmousedown=v=>v.preventDefault();
+    b.onclick=()=>{const s=lastF.selectionStart??lastF.value.length;lastF.value=lastF.value.slice(0,s)+c+lastF.value.slice(lastF.selectionEnd??s);lastF.focus();lastF.setSelectionRange(s+1,s+1);lastF.dispatchEvent(new Event("input"))};$("exKeys").appendChild(b)});
+  const words=v=>(v.match(/[a-záéíóúñü]+/gi)||[]).length;
+  const wScore=()=>{const v=ta.value;let s=0;$("wcheck").innerHTML=e.write.check.map(([l,r])=>{const ok=typeof r==="number"?words(v)>=r:r.test(v);if(ok)s++;return `<li class="${ok?"done":""}">${l.replace(/\(([^)]*)\)/,'<span class="es" lang="es">($1)</span>')}</li>`}).join("");$("wc").textContent="عدد الكلمات: "+words(v);return s};
+  ta.addEventListener("input",()=>{store.set("es_w_"+e.id,ta.value);wScore()});wScore();
+  $("exGrade").onclick=()=>{const all=e.parts.flatMap(p=>p.groups.flatMap(g=>g.items));let obj=0,miss=0;
+    all.forEach(it=>{const fb=$("fb-"+it._id);fb.className="fb";
+      if(it.type==="mc"){const box=document.querySelector(`.opts[data-id="${it._id}"]`);box.dataset.locked=1;const sel=box.querySelector('[aria-pressed="true"]');
+        box.querySelector('[data-j="0"]').classList.add("good");
+        if(!sel){miss++;fb.textContent="لم تُجب";fb.classList.add("bad")}else if(sel.dataset.j==="0"){obj+=it.pts}else{sel.classList.add("wrong")}}
+      else{const inp=$("in-"+it._id);inp.readOnly=true;const v=norm(inp.value);
+        if(!v){miss++;inp.className="wrong";fb.textContent="الجواب: "+it.a[0];fb.classList.add("bad")}
+        else if(it.a.some(a=>norm(a)===v)){inp.className="good";obj+=it.pts}
+        else if(it.a.some(a=>plain(norm(a))===plain(v))){inp.className="near";obj+=it.pts/2;fb.textContent="انتبه للنبرة: "+it.a[0];fb.classList.add("warn")}
+        else{inp.className="wrong";fb.textContent="الجواب: "+it.a[0];fb.classList.add("bad")}}});
+    const w=wScore(), total=Math.round((obj+w)*4)/4;
+    exBest[e.id]=Math.max(exBest[e.id]??0,total);store.set("es_exbest",exBest);addPts(Math.round(total));
+    $("modelBox").hidden=false;$("exGrade").disabled=true;
+    const mention=total>=16?"ممتاز — ¡Excelente!":total>=14?"جيد جدًا — ¡Muy bien!":total>=12?"جيد — ¡Bien!":total>=10?"مقبول — Aprobado":"يحتاج إلى مراجعة — ¡Ánimo!";
+    $("exResult").innerHTML=`<div class="result"><div class="big">${total} / 20</div><p><b>${mention}</b></p>
+      <div class="tbl"><table><tr><th>الجزء</th><th>العلامة</th></tr><tr><td>الفهم والكفاءة اللغوية</td><td>${Math.round(obj*4)/4} / 14</td></tr><tr><td>التعبير الكتابي (تقدير آلي)</td><td>${w} / 6</td></tr></table></div>
+      <p class="hint">علامة التعبير الكتابي تقديرية: الدفتر يتحقق فقط من وجود العناصر المطلوبة. اطلب من الأستاذ تصحيح الأخطاء، وقارن فقرتك بالنموذج.${miss?" أسئلة بلا جواب: "+miss+".":""}</p></div>`;
+    $("exResult").scrollIntoView({behavior:"smooth",block:"center"})};
+  $("exReset").onclick=()=>renderExam();
+  window.scrollTo({top:0});
+}
+renderExamList();
 renderStats();
 })();
 </script>
