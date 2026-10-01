@@ -215,6 +215,15 @@ footer{color:var(--muted);font-size:.9rem;text-align:center;margin-top:28px}
     <label class="vrow" for="vPitch"><span>طبقة الصوت <b id="vPitchV"></b></span><input type="range" id="vPitch" min="0.5" max="1.8" step="0.05"></label>
     <div class="chips" id="vPresets"></div>
     <div class="row"><button class="btn" id="vTest">جرّب الصوت</button><button class="btn ghost" id="vReset">الإعدادات الأصلية</button></div>
+    <details class="g" id="vHelp"><summary>كيف أحصل على صوت أجمل؟</summary><div class="body">
+      <p>الأصوات تأتي من الجهاز نفسه. أجمل الأصوات المجانية هي الأصوات «الطبيعية»:</p>
+      <ul class="goals">
+        <li><b>على الحاسوب:</b> افتح الدفتر في متصفح <b>Microsoft Edge</b>، ففيه أصوات إسبانية طبيعية جاهزة مثل <span class="es">Microsoft Elvira Online (Natural)</span>. وفي <b>Google Chrome</b> اختر <span class="es">Google español</span>.</li>
+        <li><b>أندرويد:</b> الإعدادات ← إمكانية الوصول ← تحويل النص إلى كلام ← المحرك المفضل: <b>خدمات Google للكلام</b> ← اضغط على أيقونة الإعدادات ← تثبيت بيانات الصوت ← <b>الإسبانية (إسبانيا)</b> واختر صوتًا عالي الجودة.</li>
+        <li><b>آيفون وآيباد:</b> الإعدادات ← تسهيلات الاستخدام ← المحتوى المنطوق ← الأصوات ← الإسبانية ← نزّل صوتًا مكتوب بجانبه <b>(Enhanced)</b> أو <b>(Premium)</b> مثل <span class="es">Mónica</span> أو <span class="es">Jorge</span>.</li>
+      </ul>
+      <p>بعد التثبيت أعد فتح الدفتر، وسيختار تلقائيًا أفضل صوت.</p>
+    </div></details>
   </div>
 
   <nav class="tabs" role="tablist" aria-label="أقسام الدفتر">
@@ -343,16 +352,28 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 /* speech */
 const VDEF={voice:"",rate:.85,pitch:1};
 let vset=Object.assign({},VDEF,store.get("es_voice",{}));
-const esVoices=()=>{try{return speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang))}catch(e){return[]}};
+/* rank voices: neural/online voices first, robotic and novelty voices last */
+function vScore(v){let n=v.name,s=0;
+  if(/natural|neural|online/i.test(n))s+=6;
+  if(/google/i.test(n))s+=4;
+  if(/premium|enhanced|mejorad|siri/i.test(n))s+=4;
+  if(/m[oó]nica|paulina|jorge|luc[ií]a|elvira|[aá]lvaro|dalia|jorge|marisol|helena|pablo|laura/i.test(n))s+=1;
+  if(/es[-_]ES/i.test(v.lang))s+=1;
+  if(/compact|espeak|eloquence|eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley|bad news|bells|bubbles|jester|organ|trinoids|whisper|zarvox|albert|bahh|boing|cellos|wobble|superstar|junior|ralph|fred|kathy/i.test(n))s-=8;
+  return s}
+const esVoices=()=>{try{return speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a))}catch(e){return[]}};
 function say(t){try{if(!("speechSynthesis" in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);
-  const vs=esVoices(),v=vs.find(x=>x.voiceURI===vset.voice)||vs.find(x=>/es-ES/i.test(x.lang))||vs[0];
+  const vs=esVoices(),v=vs.find(x=>x.voiceURI===vset.voice)||vs[0];
   u.lang=v?v.lang:"es-ES";if(v)u.voice=v;u.rate=vset.rate;u.pitch=vset.pitch;speechSynthesis.speak(u)}catch(e){}}
 const PRESETS=[["عادي",.85,1],["بطيء للتعلّم",.6,1],["صوت أعمق",.85,.7],["صوت أرفع",.85,1.4],["سريع كالمتحدث الأصلي",1.1,1]];
 function fillVoices(){const sel=$("vVoice"),vs=esVoices();
   const country={ES:"إسبانيا",MX:"المكسيك",US:"الولايات المتحدة",AR:"الأرجنتين",CO:"كولومبيا",CL:"تشيلي"};
-  sel.innerHTML=vs.length?vs.map(v=>{const c=(v.lang.split(/[-_]/)[1]||"").toUpperCase();return `<option value="${esc(v.voiceURI)}">${esc(v.name)}${country[c]?" — "+country[c]:""}</option>`}).join(""):'<option value="">الصوت الافتراضي</option>';
-  if(vs.some(v=>v.voiceURI===vset.voice))sel.value=vset.voice;
-  $("vNote").textContent=vs.length?("أصوات إسبانية متوفرة على هذا الجهاز: "+vs.length+"."):"لا يوجد صوت إسباني مثبّت على هذا الجهاز، لذلك يُستعمل الصوت الافتراضي. يمكنك تثبيت صوت إسباني من إعدادات الهاتف أو الحاسوب (تحويل النص إلى كلام)."}
+  sel.innerHTML=(vs.length?`<option value="">تلقائي: أفضل صوت (${esc(vs[0].name)})</option>`:'<option value="">الصوت الافتراضي</option>')+vs.map(v=>{const c=(v.lang.split(/[-_]/)[1]||"").toUpperCase();return `<option value="${esc(v.voiceURI)}">${vScore(v)>=4?"★ ":""}${esc(v.name)}${country[c]?" — "+country[c]:""}</option>`}).join("");
+  sel.value=vs.some(v=>v.voiceURI===vset.voice)?vset.voice:"";
+  const good=vs.some(v=>vScore(v)>=4);
+  $("vNote").innerHTML=!vs.length?"لا يوجد صوت إسباني على هذا الجهاز، لذلك يقرأ الصوت الافتراضي الكلمات الإسبانية بنطق غير صحيح. راجع «كيف أحصل على صوت أجمل؟» أسفله."
+    :good?`الأصوات المعلَّمة بـ ★ هي الأعلى جودة. عدد الأصوات الإسبانية على هذا الجهاز: ${vs.length}.`
+    :`عدد الأصوات الإسبانية على هذا الجهاز: ${vs.length}، لكنها كلها أصوات بسيطة. للحصول على صوت طبيعي راجع «كيف أحصل على صوت أجمل؟» أسفله.`}
 function syncVoiceUI(){$("vRate").value=vset.rate;$("vPitch").value=vset.pitch;$("vRateV").textContent="×"+(+vset.rate).toFixed(2);$("vPitchV").textContent=(+vset.pitch).toFixed(2);
   [...$("vPresets").children].forEach((b,i)=>b.setAttribute("aria-pressed",PRESETS[i][1]==vset.rate&&PRESETS[i][2]==vset.pitch))}
 const saveV=()=>{store.set("es_voice",vset);syncVoiceUI()};
