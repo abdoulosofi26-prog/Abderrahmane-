@@ -1,0 +1,778 @@
+<title>¡Vamos! تعلّم الإسبانية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Literata:ital,opsz,wght@0,7..72,500;0,7..72,700;1,7..72,500&family=Reem+Kufi:wght@500;700&display=swap">
+<style>
+/* Layout: one column study notebook, azulejo-tiled masthead, tab bar of five study rooms */
+:root{
+  --bg:#f2f5fa; --surface:#ffffff; --sunk:#e7ecf5; --line:#d3dbe9;
+  --ink:#14213d; --muted:#57627a;
+  --cobalt:#1f4fbf; --cobalt-soft:#dfe7fb; --saffron:#d99a00; --saffron-soft:#fbefcf;
+  --ok:#1b8455; --ok-soft:#dcf2e6; --bad:#bf3434; --bad-soft:#f8e0e0;
+  --f-display:"Reem Kufi","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;
+  --f-es:"Literata",Georgia,"Times New Roman",serif;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1322; --surface:#151d31; --sunk:#1c2640; --line:#2a3655;
+  --ink:#e7ecf6; --muted:#9ba6bf;
+  --cobalt:#7ea4ff; --cobalt-soft:#1f2c52; --saffron:#f1bd3c; --saffron-soft:#3a2f12;
+  --ok:#4cc48a; --ok-soft:#173527; --bad:#ff7d7d; --bad-soft:#3d1c1f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1322; --surface:#151d31; --sunk:#1c2640; --line:#2a3655;
+  --ink:#e7ecf6; --muted:#9ba6bf;
+  --cobalt:#7ea4ff; --cobalt-soft:#1f2c52; --saffron:#f1bd3c; --saffron-soft:#3a2f12;
+  --ok:#4cc48a; --ok-soft:#173527; --bad:#ff7d7d; --bad-soft:#3d1c1f; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.7;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+[lang="es"],.es{font-family:var(--f-es);direction:ltr;unicode-bidi:isolate}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.3}
+h2{font-size:1.45rem}
+h3{font-size:1.1rem}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+
+/* masthead */
+.mast{position:relative;overflow:hidden;color:#fff;background:#173a8f;border-radius:0 0 22px 22px;margin-inline:-16px;padding:28px 20px 22px}
+.mast::before{content:"";position:absolute;inset:0;opacity:.22;
+  background:
+   radial-gradient(circle at 50% 50%, transparent 9px, #f1bd3c 10px 11px, transparent 12px) 0 0/44px 44px,
+   conic-gradient(from 45deg at 50% 50%, #ffffff22 0 25%, transparent 0 50%, #ffffff22 0 75%, transparent 0) 0 0/44px 44px}
+.mast>*{position:relative}
+.mast h1{font-size:clamp(1.7rem,5vw,2.4rem)}
+.mast h1 .es{font-style:italic;color:#f6cd5c;font-weight:700}
+.mast p{opacity:.9;max-width:60ch;margin-top:6px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.stat{background:#ffffff1f;border:1px solid #ffffff33;border-radius:999px;padding:4px 14px;font-size:.9rem;font-variant-numeric:tabular-nums}
+.stat b{color:#f6cd5c}
+
+/* tabs */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding-block:12px;margin-bottom:6px;scrollbar-width:none}
+.tab{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 16px;font-weight:500}
+.tab[aria-selected="true"]{background:var(--cobalt);border-color:var(--cobalt);color:var(--surface)}
+section[role="tabpanel"]{display:grid;gap:18px}
+.lead{color:var(--muted);max-width:65ch}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:4px 12px;font-size:.92rem}
+.chip[aria-pressed="true"]{background:var(--saffron-soft);border-color:var(--saffron);font-weight:600}
+.btn{border:0;border-radius:10px;padding:9px 18px;font-weight:600;background:var(--cobalt);color:var(--surface)}
+.btn.ghost{background:var(--sunk);color:var(--ink)}
+.btn.ok{background:var(--ok);color:var(--surface)}
+.btn.bad{background:var(--bad);color:var(--surface)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.spk{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);vertical-align:middle}
+.spk svg{width:18px;height:18px;fill:var(--cobalt)}
+
+/* flashcard */
+.card{perspective:900px;height:230px;cursor:pointer}
+.card-in{position:relative;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.card.flip .card-in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:grid;place-items:center;text-align:center;padding:20px;border:1px solid var(--line)}
+.front{background:var(--surface)}
+.back{background:var(--cobalt-soft);transform:rotateY(180deg)}
+.front .es{font-size:clamp(1.8rem,6vw,2.6rem);font-weight:700}
+.back .ar{font-family:var(--f-display);font-size:clamp(1.6rem,5vw,2.2rem)}
+.hint{font-size:.85rem;color:var(--muted)}
+.counter{font-variant-numeric:tabular-nums;color:var(--muted)}
+.bar{height:6px;background:var(--sunk);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--saffron);transition:width .3s}
+
+/* conjugation */
+.conj{display:grid;gap:8px}
+.conj label{display:grid;grid-template-columns:minmax(120px,170px) 1fr auto;gap:10px;align-items:center}
+.conj .pr{font-family:var(--f-es);direction:ltr;text-align:left;color:var(--muted)}
+.conj input{width:100%;min-width:0;font-family:var(--f-es);font-size:1.1rem;direction:ltr;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.conj input.good{border-color:var(--ok);background:var(--ok-soft)}
+.conj input.near{border-color:var(--saffron);background:var(--saffron-soft)}
+.conj input.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.conj .fix{font-family:var(--f-es);direction:ltr;min-width:6ch;color:var(--ok);font-weight:700}
+.verb-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px}
+.verb-head .es{font-size:2rem;font-weight:700;color:var(--cobalt)}
+.keys{display:flex;flex-wrap:wrap;gap:6px}
+.keys button{font-family:var(--f-es);min-width:40px;padding:4px 10px;border-radius:8px;border:1px solid var(--line);background:var(--sunk)}
+select{font:inherit;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.msg{font-weight:600}
+
+/* grammar */
+details.g{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:0 18px}
+details.g summary{cursor:pointer;padding:14px 0;font-family:var(--f-display);font-size:1.1rem;list-style:none;display:flex;justify-content:space-between;gap:12px}
+details.g summary::after{content:"+";color:var(--cobalt);font-size:1.4rem;line-height:1}
+details.g[open] summary::after{content:"−"}
+details.g .body{padding-bottom:18px;display:grid;gap:10px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:320px}
+th,td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:right;vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:.9rem}
+td.es,th.es{text-align:left}
+.ex{background:var(--sunk);border-radius:8px;padding:8px 12px}
+.ex .es{display:block;font-weight:500}
+.ex .tr{color:var(--muted);font-size:.92rem}
+.note{border-inline-start:4px solid var(--saffron);background:var(--saffron-soft);padding:8px 12px;border-radius:6px}
+
+/* reading */
+.text{font-size:1.15rem;line-height:1.9;max-width:65ch}
+.text .es{display:block}
+.tr-block{color:var(--muted);font-size:.98rem}
+.q{display:grid;gap:8px}
+.q .es{font-weight:600}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 14px;font-family:var(--f-es);direction:ltr}
+.opt.good{background:var(--ok-soft);border-color:var(--ok)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+textarea{width:100%;min-height:150px;font-family:var(--f-es);font-size:1.05rem;direction:ltr;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.check{list-style:none;padding:0;margin:0;display:grid;gap:4px}
+.check li::before{content:"○ ";color:var(--muted)}
+.check li.done::before{content:"● ";color:var(--ok)}
+
+/* quiz */
+.quiz-q{font-size:1.5rem;text-align:center;padding-block:10px}
+.quiz-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.quiz-opts .opt{padding:12px;font-size:1.05rem;direction:inherit;font-family:inherit}
+.quiz-opts .opt.es-o{font-family:var(--f-es);direction:ltr}
+.big{font-family:var(--f-display);font-size:3rem;color:var(--cobalt);font-variant-numeric:tabular-nums}
+
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.plan div{background:var(--sunk);border-radius:10px;padding:12px}
+.plan b{display:block;font-family:var(--f-display);color:var(--cobalt)}
+/* units */
+.unit{display:grid;gap:18px}
+.unit-head .eyebrow{font-size:.8rem;letter-spacing:.06em;color:var(--saffron);font-weight:600}
+.unit-head h2.es{font-size:clamp(1.4rem,4.5vw,1.9rem);color:var(--cobalt);font-weight:700}
+.unit-head p{color:var(--muted);margin-top:4px}
+.goals{margin:0;padding-inline-start:20px;display:grid;gap:2px}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.word{display:flex;justify-content:space-between;align-items:baseline;gap:10px;text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 12px}
+.word .es{font-weight:500}
+.word .ar{color:var(--muted);font-size:.9rem}
+.word:hover{border-color:var(--cobalt)}
+.ex-q{display:grid;gap:8px;padding-block:6px;border-bottom:1px solid var(--line)}
+.ex-q:last-child{border-bottom:0}
+.proj{background:var(--cobalt-soft);border-radius:10px;padding:12px 14px}
+.proj b{font-family:var(--f-display);color:var(--cobalt)}
+.done-tag{font-size:.8rem;color:var(--ok)}
+/* voice settings */
+.stat-btn{color:#fff;cursor:pointer}
+.stat-btn:hover,.stat-btn[aria-expanded="true"]{background:#ffffff38}
+.voice{display:grid;gap:12px;margin-top:14px}
+.vrow{display:grid;grid-template-columns:minmax(110px,150px) 1fr;gap:12px;align-items:center}
+.vrow select{min-width:0;width:100%}
+.vrow input[type=range]{width:100%;accent-color:var(--cobalt)}
+.vrow b{font-variant-numeric:tabular-nums;color:var(--cobalt);font-weight:600}
+@media (max-width:520px){.vrow{grid-template-columns:1fr}}
+/* exams */
+.exam-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.exam-card{display:grid;gap:4px;text-align:start;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:14px 16px}
+.exam-card:hover{border-color:var(--cobalt)}
+.exam-card .eyebrow{font-size:.8rem;color:var(--saffron);font-weight:600}
+.exam-card .es{font-size:1.3rem;font-weight:700;color:var(--cobalt);text-align:left}
+.ex-part{display:grid;gap:10px;border-top:2px solid var(--line);padding-top:14px}
+.ex-part .pts{font-family:var(--f-body);font-size:.9rem;color:var(--muted);font-weight:400}
+.ex-group{display:grid;gap:4px}
+.ex-group h4{margin:0;font-size:1rem;color:var(--cobalt)}
+.opt[aria-pressed="true"]{border-color:var(--cobalt);background:var(--cobalt-soft);font-weight:600}
+.in-q{display:grid;grid-template-columns:1fr minmax(120px,220px);gap:10px;align-items:center}
+.in-q input{width:100%;min-width:0;font-family:var(--f-es);font-size:1.05rem;direction:ltr;padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.in-q input.good{border-color:var(--ok);background:var(--ok-soft)}
+.in-q input.near{border-color:var(--saffron);background:var(--saffron-soft)}
+.in-q input.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.fb{font-size:.9rem;font-family:var(--f-body)}
+.fb.bad{color:var(--bad)} .fb.warn{color:var(--saffron)}
+.fb:empty{display:none}
+.result{display:grid;gap:8px;background:var(--sunk);border-radius:12px;padding:16px}
+.btn:disabled{opacity:.5;cursor:default}
+@media (max-width:520px){.in-q{grid-template-columns:1fr}}
+footer{color:var(--muted);font-size:.9rem;text-align:center;margin-top:28px}
+
+@media (max-width:520px){
+  .conj label{grid-template-columns:1fr auto}
+  .conj .pr{grid-column:1/-1}
+}
+@media (prefers-reduced-motion:reduce){.card-in,.bar i{transition:none}}
+</style>
+
+<div class="wrap" dir="rtl">
+  <header class="mast">
+    <h1><span class="es" lang="es">¡Vamos!</span> دفتر الإسبانية</h1>
+    <p>مفردات، تصريف، قواعد، قراءة واختبار — مصمَّم لتلميذ السنة الثانية ثانوي شعبة اللغات الأجنبية، مع شرح بالعربية ونطق صوتي لكل كلمة.</p>
+    <div class="stats">
+      <span class="stat">نقاطك: <b id="pts">0</b></span>
+      <span class="stat">كلمات حفظتها: <b id="known">0</b></span>
+      <button class="stat stat-btn" id="voiceBtn" aria-expanded="false" aria-controls="voicePanel">إعدادات الصوت</button>
+    </div>
+  </header>
+
+  <div class="panel voice" id="voicePanel" hidden>
+    <div class="row" style="justify-content:space-between"><h3>إعدادات الصوت</h3><button class="btn ghost" id="voiceClose">إغلاق</button></div>
+    <label class="vrow" for="vVoice"><span>الصوت</span><select id="vVoice"></select></label>
+    <p class="hint" id="vNote"></p>
+    <label class="vrow" for="vRate"><span>السرعة <b id="vRateV"></b></span><input type="range" id="vRate" min="0.5" max="1.3" step="0.05"></label>
+    <label class="vrow" for="vPitch"><span>طبقة الصوت <b id="vPitchV"></b></span><input type="range" id="vPitch" min="0.5" max="1.8" step="0.05"></label>
+    <div class="chips" id="vPresets"></div>
+    <div class="row"><button class="btn" id="vTest">جرّب الصوت</button><button class="btn ghost" id="vReset">الإعدادات الأصلية</button></div>
+    <details class="g" id="vHelp"><summary>كيف أحصل على صوت أجمل؟</summary><div class="body">
+      <p>الأصوات تأتي من الجهاز نفسه. أجمل الأصوات المجانية هي الأصوات «الطبيعية»:</p>
+      <ul class="goals">
+        <li><b>على الحاسوب:</b> افتح الدفتر في متصفح <b>Microsoft Edge</b>، ففيه أصوات إسبانية طبيعية جاهزة مثل <span class="es">Microsoft Elvira Online (Natural)</span>. وفي <b>Google Chrome</b> اختر <span class="es">Google español</span>.</li>
+        <li><b>أندرويد:</b>
+          <ol class="goals">
+            <li>من متجر Play ثبّت أو حدّث تطبيق <b>Speech Recognition and Synthesis from Google</b> (خدمات Google للكلام).</li>
+            <li>افتح الإعدادات واكتب في خانة البحث أعلاها: <b>تحويل النص إلى كلام</b> (أو <span class="es">Text-to-speech</span>). المكان يختلف حسب نوع الهاتف:
+              سامسونج: الإدارة العامة ← اللغة ← تحويل النص إلى كلام. شاومي: إعدادات إضافية ← اللغات والإدخال ← تحويل النص إلى كلام.</li>
+            <li>في <b>المحرك المفضل</b> اختر <b>Google</b> وليس Samsung أو غيره.</li>
+            <li>اضغط على رمز الترس ⚙ بجانب Google ← <b>تثبيت بيانات الصوت</b> ← <span class="es">Español (España)</span> ← اضغط عليها وانتظر التنزيل، ثم اختر صوتًا من الأصوات المعروضة.</li>
+            <li>افتح الدفتر في متصفح <b>Chrome</b>، ثم اختر الصوت من «إعدادات الصوت».</li>
+          </ol></li>
+        <li><b>آيفون وآيباد:</b> الإعدادات ← تسهيلات الاستخدام ← المحتوى المنطوق ← الأصوات ← الإسبانية ← نزّل صوتًا مكتوب بجانبه <b>(Enhanced)</b> أو <b>(Premium)</b> مثل <span class="es">Mónica</span> أو <span class="es">Jorge</span>.</li>
+      </ul>
+      <p>بعد التثبيت أعد فتح الدفتر، وسيختار تلقائيًا أفضل صوت.</p>
+    </div></details>
+  </div>
+
+  <nav class="tabs" role="tablist" aria-label="أقسام الدفتر">
+    <button class="tab" role="tab" id="t-units" aria-controls="p-units" aria-selected="true">دروس الكتاب</button>
+    <button class="tab" role="tab" id="t-vocab" aria-controls="p-vocab" aria-selected="false">المفردات</button>
+    <button class="tab" role="tab" id="t-conj" aria-controls="p-conj" aria-selected="false">التصريف</button>
+    <button class="tab" role="tab" id="t-gram" aria-controls="p-gram" aria-selected="false">القواعد والنطق</button>
+    <button class="tab" role="tab" id="t-read" aria-controls="p-read" aria-selected="false">القراءة والكتابة</button>
+    <button class="tab" role="tab" id="t-exam" aria-controls="p-exam" aria-selected="false">الاختبارات</button>
+    <button class="tab" role="tab" id="t-quiz" aria-controls="p-quiz" aria-selected="false">اختبار سريع</button>
+  </nav>
+
+  <!-- UNITS -->
+  <section role="tabpanel" id="p-units" aria-labelledby="t-units">
+    <p class="lead">دروس مرتّبة حسب وحدات كتاب السنة الثانية <span class="es" lang="es">«Un mundo por descubrir»</span>. لكل وحدة: مفردات مع النطق، قواعد مشروحة بالعربية، تمرين مصحَّح ومشروع. الشروح والتمارين من إعداد هذا الدفتر وليست نسخة من الكتاب.</p>
+    <div class="chips" id="unitChips"></div>
+    <article class="panel unit" id="unitBox"></article>
+  </section>
+
+  <!-- VOCAB -->
+  <section role="tabpanel" id="p-vocab" aria-labelledby="t-vocab" hidden>
+    <p class="lead">اختر موضوعًا، اقرأ الكلمة واستمع لنطقها، حاول تذكّر معناها ثم اضغط على البطاقة لقلبها. إن عرفتها اضغط «عرفتها».</p>
+    <div class="chips" id="cats"></div>
+    <div class="panel" style="display:grid;gap:14px">
+      <div class="bar"><i id="vbar" style="width:0"></i></div>
+      <div class="card" id="card" tabindex="0" role="button" aria-label="اقلب البطاقة">
+        <div class="card-in">
+          <div class="face front"><div><span class="es" lang="es" id="cEs"></span><div class="hint">اضغط لرؤية المعنى</div></div></div>
+          <div class="face back"><div><div class="ar" id="cAr"></div><div class="hint es" lang="es" id="cEs2"></div></div></div>
+        </div>
+      </div>
+      <div class="row" style="justify-content:space-between">
+        <div class="row">
+          <button class="spk" id="say" aria-label="استمع للنطق"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg></button>
+          <span class="counter" id="vcount"></span>
+        </div>
+        <div class="row">
+          <button class="btn ghost" id="again">مرة أخرى</button>
+          <button class="btn ok" id="gotit">عرفتها</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONJ -->
+  <section role="tabpanel" id="p-conj" aria-labelledby="t-conj" hidden>
+    <p class="lead">اكتب تصريف الفعل مع كل ضمير ثم اضغط «تحقق». الأخضر صحيح، الأصفر صحيح لكن تنقصه علامة النبرة (á, é…)، والأحمر خطأ.</p>
+    <div class="panel row">
+      <label>الزمن:
+        <select id="tense"><option value="pres">Presente — المضارع</option><option value="pret">Pretérito indefinido — الماضي</option></select>
+      </label>
+      <label>الأفعال:
+        <select id="vset"><option value="reg">منتظمة</option><option value="irr">شاذة</option><option value="all">الكل</option></select>
+      </label>
+    </div>
+    <div class="panel" style="display:grid;gap:14px">
+      <div class="verb-head"><span class="es" lang="es" id="vInf"></span><span id="vAr"></span><button class="spk" id="sayVerb" aria-label="استمع للفعل"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg></button></div>
+      <div class="conj" id="conj"></div>
+      <div class="keys" id="keys" aria-label="حروف إسبانية"></div>
+      <div class="row">
+        <button class="btn" id="check">تحقق</button>
+        <button class="btn ghost" id="show">أظهر الحل</button>
+        <button class="btn ghost" id="nextVerb">فعل آخر</button>
+        <span class="msg" id="cmsg" aria-live="polite"></span>
+      </div>
+      <details class="g" style="padding-inline:12px"><summary>تذكير بالنهايات</summary><div class="body" id="endings"></div></details>
+    </div>
+  </section>
+
+  <!-- GRAMMAR -->
+  <section role="tabpanel" id="p-gram" aria-labelledby="t-gram" hidden>
+    <p class="lead">ستّ قواعد أساسية يحتاجها التلميذ في السنة الثانية، مشروحة بالعربية مع أمثلة. اضغط على الأمثلة الإسبانية لسماعها.</p>
+    <div id="grammar" style="display:grid;gap:10px"></div>
+  </section>
+
+  <!-- READING -->
+  <section role="tabpanel" id="p-read" aria-labelledby="t-read" hidden>
+    <div class="panel" style="display:grid;gap:14px">
+      <div class="row" style="justify-content:space-between"><h2 class="es" lang="es">Me presento</h2>
+        <div class="row"><button class="spk" id="sayText" aria-label="استمع للنص"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg></button>
+        <button class="btn ghost" id="trBtn">أظهر الترجمة</button></div></div>
+      <div class="text" id="rtext"></div>
+      <p class="tr-block" id="rtr" hidden></p>
+    </div>
+    <div class="panel" style="display:grid;gap:16px">
+      <h3>أسئلة الفهم</h3>
+      <div id="rqs" style="display:grid;gap:16px"></div>
+    </div>
+    <div class="panel" style="display:grid;gap:12px">
+      <h3>الآن دورك: قدّم نفسك بالإسبانية</h3>
+      <p class="lead">اكتب فقرة على منوال النص. القائمة تتحقق تلقائيًا مما استعملته. ما تكتبه يُحفظ على هذا الجهاز فقط.</p>
+      <textarea id="essay" lang="es" placeholder="Hola, me llamo ..."></textarea>
+      <ul class="check" id="essayCheck"></ul>
+    </div>
+  </section>
+
+  <!-- EXAMS -->
+  <section role="tabpanel" id="p-exam" aria-labelledby="t-exam" hidden>
+    <p class="lead">ثلاثة اختبارات فصلية على منوال اختبارات الثانوية، تُصحَّح آليًا وتُعطي علامة من 20.</p>
+    <article class="panel unit" id="examBox"></article>
+  </section>
+
+  <!-- QUIZ -->
+  <section role="tabpanel" id="p-quiz" aria-labelledby="t-quiz" hidden>
+    <div class="panel" style="display:grid;gap:14px" id="quizBox"></div>
+    <div class="panel" style="display:grid;gap:12px">
+      <h3>خطة 15 دقيقة يوميًا</h3>
+      <div class="plan">
+        <div><b>5 دقائق</b>بطاقات المفردات لموضوع واحد مع ترديد النطق بصوت مرتفع.</div>
+        <div><b>5 دقائق</b>تصريف فعلين: واحد منتظم وواحد شاذ.</div>
+        <div><b>5 دقائق</b>قاعدة واحدة أو قراءة النص، ثم اختبار سريع في آخر الأسبوع.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>¡Mucho ánimo! — بالتوفيق</footer>
+</div>
+
+<script>
+(function(){
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* speech */
+const VDEF={voice:"",rate:.85,pitch:1};
+let vset=Object.assign({},VDEF,store.get("es_voice",{}));
+/* rank voices: neural/online voices first, robotic and novelty voices last */
+function vScore(v){let n=v.name,s=0;
+  if(/natural|neural|online/i.test(n))s+=6;
+  if(/google/i.test(n))s+=4;
+  if(/premium|enhanced|mejorad|siri/i.test(n))s+=4;
+  if(/m[oó]nica|paulina|jorge|luc[ií]a|elvira|[aá]lvaro|dalia|jorge|marisol|helena|pablo|laura/i.test(n))s+=1;
+  if(/es[-_]ES/i.test(v.lang))s+=1;
+  if(/compact|espeak|eloquence|eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley|bad news|bells|bubbles|jester|organ|trinoids|whisper|zarvox|albert|bahh|boing|cellos|wobble|superstar|junior|ralph|fred|kathy/i.test(n))s-=8;
+  return s}
+const esVoices=()=>{try{return speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang)).sort((a,b)=>vScore(b)-vScore(a))}catch(e){return[]}};
+function say(t){try{if(!("speechSynthesis" in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);
+  const vs=esVoices(),v=vs.find(x=>x.voiceURI===vset.voice)||vs[0];
+  u.lang=v?v.lang:"es-ES";if(v)u.voice=v;u.rate=vset.rate;u.pitch=vset.pitch;speechSynthesis.speak(u)}catch(e){}}
+const PRESETS=[["عادي",.85,1],["بطيء للتعلّم",.6,1],["صوت أعمق",.85,.7],["صوت أرفع",.85,1.4],["سريع كالمتحدث الأصلي",1.1,1]];
+function fillVoices(){const sel=$("vVoice"),vs=esVoices();
+  const country={ES:"إسبانيا",MX:"المكسيك",US:"الولايات المتحدة",AR:"الأرجنتين",CO:"كولومبيا",CL:"تشيلي"};
+  sel.innerHTML=(vs.length?`<option value="">تلقائي: أفضل صوت (${esc(vs[0].name)})</option>`:'<option value="">الصوت الافتراضي</option>')+vs.map(v=>{const c=(v.lang.split(/[-_]/)[1]||"").toUpperCase();return `<option value="${esc(v.voiceURI)}">${vScore(v)>=4?"★ ":""}${esc(v.name)}${country[c]?" — "+country[c]:""}</option>`}).join("");
+  sel.value=vs.some(v=>v.voiceURI===vset.voice)?vset.voice:"";
+  const good=vs.some(v=>vScore(v)>=4);
+  $("vNote").innerHTML=!vs.length?"لا يوجد صوت إسباني على هذا الجهاز، لذلك يقرأ الصوت الافتراضي الكلمات الإسبانية بنطق غير صحيح. راجع «كيف أحصل على صوت أجمل؟» أسفله."
+    :good?`الأصوات المعلَّمة بـ ★ هي الأعلى جودة. عدد الأصوات الإسبانية على هذا الجهاز: ${vs.length}.`
+    :`عدد الأصوات الإسبانية على هذا الجهاز: ${vs.length}، لكنها كلها أصوات بسيطة. للحصول على صوت طبيعي راجع «كيف أحصل على صوت أجمل؟» أسفله.`}
+function syncVoiceUI(){$("vRate").value=vset.rate;$("vPitch").value=vset.pitch;$("vRateV").textContent="×"+(+vset.rate).toFixed(2);$("vPitchV").textContent=(+vset.pitch).toFixed(2);
+  [...$("vPresets").children].forEach((b,i)=>b.setAttribute("aria-pressed",PRESETS[i][1]==vset.rate&&PRESETS[i][2]==vset.pitch))}
+const saveV=()=>{store.set("es_voice",vset);syncVoiceUI()};
+$("vPresets").innerHTML=PRESETS.map(p=>`<button class="chip" aria-pressed="false">${p[0]}</button>`).join("");
+[...$("vPresets").children].forEach((b,i)=>b.onclick=()=>{vset.rate=PRESETS[i][1];vset.pitch=PRESETS[i][2];saveV();say("Hola, ¿qué tal? Me llamo Lina.")});
+$("vVoice").onchange=()=>{vset.voice=$("vVoice").value;saveV();say("Hola, ¿qué tal?")};
+$("vRate").oninput=()=>{vset.rate=+$("vRate").value;saveV()};
+$("vPitch").oninput=()=>{vset.pitch=+$("vPitch").value;saveV()};
+$("vRate").onchange=$("vPitch").onchange=()=>say("Buenos días");
+$("vTest").onclick=()=>say("Hola, me llamo Lina. Estudio español en el instituto. ¡Mucho gusto!");
+$("vReset").onclick=()=>{vset=Object.assign({},VDEF);saveV();fillVoices()};
+const toggleV=open=>{$("voicePanel").hidden=!open;$("voiceBtn").setAttribute("aria-expanded",open);if(open){fillVoices();syncVoiceUI()}};
+$("voiceBtn").onclick=()=>toggleV($("voicePanel").hidden);$("voiceClose").onclick=()=>toggleV(false);
+try{speechSynthesis.onvoiceschanged=()=>{if(!$("voicePanel").hidden)fillVoices()}}catch(e){}
+syncVoiceUI();
+
+/* points */
+let pts=store.get("es_pts",0), known=store.get("es_known",{});
+function addPts(n){pts+=n;store.set("es_pts",pts);renderStats()}
+function renderStats(){$("pts").textContent=pts;$("known").textContent=Object.keys(known).length}
+
+/* tabs */
+const tabs=[...document.querySelectorAll(".tab")];
+function openTab(t){tabs.forEach(b=>{const on=b===t;b.setAttribute("aria-selected",on);$(b.getAttribute("aria-controls")).hidden=!on});store.set("es_tab",t.id)}
+tabs.forEach(b=>b.addEventListener("click",()=>openTab(b)));
+const savedTab=$(store.get("es_tab","t-units"));if(savedTab)openTab(savedTab);
+
+/* ---------- UNITS (themes follow "Un mundo por descubrir", content is original) ---------- */
+const X=(es,ar)=>`<div class="ex"><span class="es" lang="es">${es}</span><span class="tr">${ar}</span></div>`;
+const T=(head,rows)=>`<div class="tbl"><table><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td${/[a-záéíóúñ]/i.test(c)&&!/[؀-ۿ]/.test(c)?' class="es"':''}>${c}</td>`).join("")}</tr>`).join("")}</table></div>`;
+const UNITS=[
+{n:0,es:"¡Hola, español!",ar:"الوحدة التمهيدية: اكتشاف اللغة الإسبانية",
+ goals:["يقدّم نفسه: الاسم، العمر، البلد","يعدّ من 0 إلى 20","يعرف الحروف الخاصة بالإسبانية وعلامتي ¿ و ¡"],
+ vocab:[["cero","صفر"],["uno","واحد"],["dos","اثنان"],["tres","ثلاثة"],["cuatro","أربعة"],["cinco","خمسة"],["seis","ستة"],["siete","سبعة"],["ocho","ثمانية"],["nueve","تسعة"],["diez","عشرة"],["once","أحد عشر"],["doce","اثنا عشر"],["quince","خمسة عشر"],["dieciséis","ستة عشر"],["diecisiete","سبعة عشر"],["veinte","عشرون"],["el país","البلد"],["la nacionalidad","الجنسية"]],
+ gram:[
+  {t:"الضمائر الشخصية",b:T(["الضمير","المعنى"],[["yo","أنا"],["tú","أنتَ / أنتِ"],["él / ella","هو / هي"],["usted","حضرتك (للاحترام)"],["nosotros / nosotras","نحن"],["vosotros / vosotras","أنتم / أنتن (إسبانيا)"],["ellos / ellas","هم / هن"],["ustedes","حضراتكم"]])+`<p class="note">غالبًا ما يُحذف الضمير لأن نهاية الفعل تدلّ عليه: <span class="es">Hablo español</span> = أنا أتكلم الإسبانية.</p>`},
+  {t:"كيف أقدّم نفسي",b:X("¿Cómo te llamas? — Me llamo Amina.","ما اسمك؟ — اسمي أمينة.")+X("¿Cuántos años tienes? — Tengo dieciséis años.","كم عمرك؟ — عمري ستة عشر عامًا.")+X("¿De dónde eres? — Soy de Argelia. Soy argelina.","من أين أنت؟ — أنا من الجزائر. أنا جزائرية.")+`<p class="note">العمر يكون بالفعل <span class="es">tener</span> وليس <span class="es">ser</span>: نقول <span class="es">tengo 16 años</span>.</p>`},
+  {t:"الحروف وعلامات الكتابة",b:`<p>للإسبانية حرف خاص هو <span class="es">ñ</span>، ومجموعات تُنطق صوتًا واحدًا: <span class="es">ch</span> (تش)، <span class="es">ll</span> (ي)، <span class="es">rr</span> (راء قوية). السؤال يبدأ بـ <span class="es">¿</span> والتعجب يبدأ بـ <span class="es">¡</span>.</p>`+X("¡Hola! ¿Qué tal?","مرحبًا! كيف الحال؟")+`<p>تجد جدول النطق الكامل في قسم «القواعد والنطق».</p>`}],
+ ex:[["¿Cómo te ___?",["llamas","llamo","llama"]],["Yo ___ dieciséis años.",["tengo","soy","estoy"]],["Soy ___ Argelia.",["de","en","a"]],["Hola, buenos ___.",["días","día","dias"]],["Ocho + dos = ___",["diez","doce","nueve"]]],
+ proj:"بطاقة هوية بالإسبانية: الاسم، العمر، الجنسية، المدينة، رقم الهاتف بالحروف."},
+{n:1,es:"Mi instituto, mis compañeros",ar:"ثانويتي وزملائي",
+ goals:["يصف الثانوية: القاعات والمرافق والعاملين","يقدّم زميلًا ويتحدث عن المواد وجدول التوقيت","يقول الساعة"],
+ vocab:[["el instituto","الثانوية"],["el aula","القاعة الدراسية"],["el laboratorio","المخبر"],["la biblioteca","المكتبة"],["el patio","الساحة"],["el comedor","المطعم المدرسي"],["el director","المدير"],["el compañero","الزميل"],["la compañera","الزميلة"],["el horario","جدول التوقيت"],["la asignatura","المادة الدراسية"],["las matemáticas","الرياضيات"],["la historia","التاريخ"],["la física","الفيزياء"],["el recreo","الاستراحة"],["aprobar","ينجح في الامتحان"],["suspender","يرسب"]],
+ gram:[
+  {t:"المضارع للأفعال المنتظمة",b:`<p>نحذف <span class="es">-ar / -er / -ir</span> ونضيف النهايات. تدرّب عليها في قسم «التصريف».</p>`+T(["","estudiar","aprender","escribir"],[["yo","estudio","aprendo","escribo"],["tú","estudias","aprendes","escribes"],["él / ella","estudia","aprende","escribe"],["nosotros","estudiamos","aprendemos","escribimos"],["vosotros","estudiáis","aprendéis","escribís"],["ellos","estudian","aprenden","escriben"]])},
+  {t:"الساعة",b:X("¿Qué hora es? — Es la una. / Son las ocho.","كم الساعة؟ — إنها الواحدة. / إنها الثامنة.")+X("Son las diez y media. Son las once menos cuarto.","العاشرة والنصف. الحادية عشرة إلا ربعًا.")+X("La clase de español empieza a las nueve.","تبدأ حصة الإسبانية على الساعة التاسعة.")+`<p class="note"><span class="es">Es la una</span> بالمفرد فقط مع الواحدة، ومع باقي الساعات <span class="es">Son las...</span>. «على الساعة» = <span class="es">a las</span>.</p>`},
+  {t:"الجمع والمطابقة",b:`<p>نضيف <span class="es">-s</span> للكلمة المنتهية بحرف علة، و<span class="es">-es</span> للمنتهية بحرف ساكن. والصفة تتبع الاسم في الجنس والعدد.</p>`+X("el alumno simpático → los alumnos simpáticos","التلميذ اللطيف ← التلاميذ اللطفاء")+X("la profesora joven → las profesoras jóvenes","الأستاذة الشابة ← الأستاذات الشابات")}],
+ ex:[["Yo ___ alumno de segundo curso.",["soy","estoy","tengo"]],["Las clases empiezan ___ las ocho.",["a","en","de"]],["Mis compañeros ___ muy simpáticos.",["son","están","hay"]],["Son las diez y ___.",["media","medio","mitad"]],["Nosotros ___ español los lunes.",["estudiamos","estudian","estudio"]]],
+ proj:"اصنع بطاقة تقدّم فيها ثانويتك: اسمها، قاعاتها، موادك المفضلة وجدول توقيت يوم واحد بالإسبانية."},
+{n:2,es:"Mi mundo: familia y entorno",ar:"عالمي: العائلة والمحيط",
+ goals:["يقدّم أفراد عائلته ويصفهم شكلًا وطبعًا","يصف بيته وحيّه","يحدد مكان الأشياء"],
+ vocab:[["el marido","الزوج"],["la mujer","الزوجة / المرأة"],["el sobrino","ابن الأخ / ابن الأخت"],["el nieto","الحفيد"],["el barrio","الحي"],["el piso","الشقة"],["la cocina","المطبخ"],["el salón","قاعة الجلوس"],["el dormitorio","غرفة النوم"],["el baño","الحمّام"],["el vecino","الجار"],["rubio","أشقر"],["moreno","أسمر"],["delgado","نحيف"],["gordo","سمين"],["trabajador","مجتهد"],["tímido","خجول"]],
+ gram:[
+  {t:"صفات الملكية",b:T(["الضمير","مفرد","جمع"],[["yo","mi","mis"],["tú","tu","tus"],["él / ella / usted","su","sus"],["nosotros","nuestro / nuestra","nuestros / nuestras"],["vosotros","vuestro / vuestra","vuestros / vuestras"],["ellos","su","sus"]])+X("Mis hermanos viven en Constantina.","إخوتي يسكنون في قسنطينة.")},
+  {t:"وصف الأشخاص",b:`<p><span class="es">ser</span> + صفة للطبع والشكل، <span class="es">tener</span> للعينين والشعر، <span class="es">llevar</span> لما يرتديه.</p>`+X("Mi madre es alta y muy trabajadora.","أمي طويلة ومجتهدة جدًا.")+X("Mi padre tiene los ojos negros y lleva gafas.","أبي عيناه سوداوان ويضع نظارات.")},
+  {t:"حروف المكان وأسماء الإشارة",b:T(["الإسبانية","المعنى"],[["encima de","فوق"],["debajo de","تحت"],["al lado de","بجانب"],["delante de","أمام"],["detrás de","خلف"],["entre","بين"],["cerca de / lejos de","قريب من / بعيد عن"]])+X("Este libro (aquí), ese libro (ahí), aquel libro (allí).","هذا الكتاب (هنا)، ذلك الكتاب (هناك)، ذاك الكتاب (بعيدًا).")+`<p class="note">تذكّر: <span class="es">del = de + el</span> و <span class="es">al = a + el</span>.</p>`}],
+ ex:[["___ hermanos se llaman Alí y Omar.",["Mis","Mi","Su"]],["Mi padre ___ los ojos negros.",["tiene","es","está"]],["La cocina está al lado ___ salón.",["del","de el","al"]],["En mi barrio ___ una mezquita y un mercado.",["hay","está","es"]],["___ libro que tengo en la mano es de mi hermano.",["Este","Aquel","Esa"]]],
+ proj:"ارسم شجرة عائلتك واكتب تحت كل فرد جملة تصفه، ثم صف بيتك في خمس جمل."},
+{n:3,es:"Vida cotidiana y compras",ar:"الحياة اليومية والتسوق",
+ goals:["يحكي يومه من الصباح إلى المساء","يشتري ويسأل عن الأسعار والمقاسات","يستعمل الأفعال المنعكسة والأفعال التي يتغير جذرها"],
+ vocab:[["levantarse","ينهض من النوم"],["ducharse","يستحم"],["desayunar","يتناول الفطور"],["vestirse","يرتدي ملابسه"],["acostarse","يذهب للنوم"],["siempre","دائمًا"],["a menudo","غالبًا"],["nunca","أبدًا"],["la tienda","المحل"],["el mercado","السوق"],["el precio","السعر"],["barato","رخيص"],["caro","غالٍ"],["el dinero","المال"],["la camisa","القميص"],["los pantalones","السروال"],["los zapatos","الحذاء"],["la talla","المقاس"]],
+ gram:[
+  {t:"الأفعال المنعكسة",b:`<p>فعل يعود على الفاعل نفسه، وفي المصدر ينتهي بـ <span class="es">-se</span>.</p>`+T(["","levantarse"],[["yo","me levanto"],["tú","te levantas"],["él / ella","se levanta"],["nosotros","nos levantamos"],["vosotros","os levantáis"],["ellos","se levantan"]])+X("Me levanto a las seis y me ducho.","أنهض على الساعة السادسة وأستحم.")},
+  {t:"أفعال يتغير جذرها",b:T(["التغيّر","أمثلة"],[["e → ie","empezar → empiezo · querer → quiero · preferir → prefiero"],["o → ue","poder → puedo · volver → vuelvo · costar → cuesta"],["e → i","vestirse → me visto · pedir → pido"]])+`<p class="note">الجذر لا يتغير مع <span class="es">nosotros</span> و<span class="es">vosotros</span>: <span class="es">volvemos، preferimos</span>.</p>`},
+  {t:"في المحل",b:X("¿Cuánto cuesta esta camisa? — Cuesta dos mil dinares.","بكم هذا القميص؟ — ثمنه ألفا دينار.")+X("¿Cuánto cuestan los zapatos? ¿Qué talla tiene?","بكم الحذاء؟ ما مقاسك؟")+X("Es muy caro. ¿Tiene algo más barato?","إنه غالٍ جدًا. هل عندك شيء أرخص؟")+T(["العدد","",""],[["30 treinta","100 cien","500 quinientos"],["40 cuarenta","200 doscientos","1000 mil"]])}],
+ ex:[["Yo ___ a las siete.",["me levanto","se levanta","levanto"]],["¿Cuánto ___ estos zapatos?",["cuestan","cuesta","costan"]],["Nosotros ___ a casa a las cinco.",["volvemos","vuelvemos","vuelven"]],["Mi hermana ___ el vestido rojo.",["prefiere","prefere","preferimos"]],["Los viernes ___ voy al instituto.",["nunca","siempre","a menudo"]]],
+ proj:"اكتب حوارًا قصيرًا بين بائع وزبون في محل ملابس، ثم صف يومًا عاديًا من حياتك بالساعات."},
+{n:4,es:"Cuidemos nuestra salud y salvemos nuestro planeta",ar:"لنحافظ على صحتنا ولننقذ كوكبنا",
+ goals:["يعبّر عن الألم والمرض","يقدّم نصائح ويعبّر عن الواجب","يتحدث عن حماية البيئة"],
+ vocab:[["la cabeza","الرأس"],["el brazo","الذراع"],["la mano","اليد"],["la pierna","الساق"],["el estómago","المعدة"],["la garganta","الحلق"],["la fiebre","الحمى"],["el médico","الطبيب"],["la farmacia","الصيدلية"],["el medicamento","الدواء"],["sano","صحّي / سليم"],["enfermo","مريض"],["la contaminación","التلوث"],["el medio ambiente","البيئة"],["reciclar","يعيد التدوير"],["la basura","النفايات"],["ahorrar","يقتصد / يوفّر"]],
+ gram:[
+  {t:"الفعل doler (يؤلم)",b:`<p>يُستعمل مثل <span class="es">gustar</span>: <span class="es">duele</span> مع المفرد و<span class="es">duelen</span> مع الجمع.</p>`+X("Me duele la cabeza.","رأسي يؤلمني.")+X("Me duelen los pies. ¿Te duele la garganta?","قدماي تؤلمانني. هل حلقك يؤلمك؟")+X("Estoy enfermo, tengo fiebre.","أنا مريض، عندي حمى.")},
+  {t:"الواجب والنصيحة",b:T(["التركيب","الاستعمال"],[["tener que + infinitivo","واجب شخصي"],["hay que + infinitivo","واجب عام للجميع"],["deber + infinitivo","نصيحة / واجب"]])+X("Tienes que descansar. Hay que reciclar el plástico.","يجب أن ترتاح. يجب إعادة تدوير البلاستيك.")+X("Debes comer fruta y beber agua.","عليك أن تأكل الفاكهة وتشرب الماء.")},
+  {t:"الأمر للمخاطَب (tú)",b:`<p>الأمر الإيجابي المنتظم = صيغة <span class="es">él</span> في المضارع: <span class="es">recicla، come، escribe</span>.</p>`+T(["المصدر","الأمر الشاذ"],[["venir","ven"],["decir","di"],["hacer","haz"],["poner","pon"],["salir","sal"],["tener","ten"],["ir","ve"]])+X("¡Apaga la luz y ahorra energía!","أطفئ الضوء ووفّر الطاقة!")}],
+ ex:[["Me ___ la cabeza.",["duele","duelen","dolor"]],["Me duelen ___ pies.",["los","las","el"]],["Para estar sano ___ hacer deporte.",["hay que","hay","tiene"]],["Tú ___ que beber más agua.",["tienes","tiene","hay"]],["¡___ la basura, por favor!",["Recicla","Reciclas","Reciclar"]]],
+ proj:"صمّم ملصقًا فيه عشر نصائح بصيغة الأمر: خمس للصحة وخمس لحماية البيئة."},
+{n:5,es:"Adictos a las nuevas tecnologías",ar:"التكنولوجيا الحديثة والهوايات",
+ goals:["يتحدث عن استعمال الهاتف والإنترنت","يعبّر عن رأيه ويقارن","يحكي ما فعله اليوم أو هذا الأسبوع"],
+ vocab:[["el ordenador","الحاسوب"],["el móvil","الهاتف المحمول"],["la pantalla","الشاشة"],["la red social","شبكة التواصل الاجتماعي"],["el mensaje","الرسالة"],["descargar","يحمّل (من الإنترنت)"],["enviar","يرسل"],["la contraseña","كلمة السر"],["el videojuego","لعبة الفيديو"],["el partido","المباراة"],["el equipo","الفريق"],["el aficionado","المشجع / الهاوي"],["ganar","يفوز"],["perder","يخسر"],["el tiempo libre","وقت الفراغ"]],
+ gram:[
+  {t:"الماضي القريب (pretérito perfecto)",b:`<p><span class="es">haber</span> في المضارع + اسم المفعول (<span class="es">-ado</span> للأفعال <span class="es">-ar</span>، و<span class="es">-ido</span> للأفعال <span class="es">-er / -ir</span>). يُستعمل مع <span class="es">hoy، esta semana، ya، todavía no</span>.</p>`+T(["haber","مثال"],[["he","he enviado"],["has","has comido"],["ha","ha salido"],["hemos","hemos jugado"],["habéis","habéis visto"],["han","han escrito"]])+`<p class="note">أسماء مفعول شاذة: <span class="es">hacer → hecho، ver → visto، escribir → escrito، decir → dicho، poner → puesto، abrir → abierto، volver → vuelto</span>.</p>`},
+  {t:"المقارنة",b:T(["التركيب","المعنى"],[["más ... que","أكثر ... من"],["menos ... que","أقل ... من"],["tan ... como","بقدر ..."],["mejor / peor","أفضل / أسوأ"]])+X("El móvil es más práctico que el ordenador.","الهاتف أكثر عملية من الحاسوب.")+X("Este equipo es mejor que el otro.","هذا الفريق أفضل من الآخر.")},
+  {t:"التعبير عن الرأي والذوق",b:X("Creo que las redes sociales son útiles.","أظن أن شبكات التواصل مفيدة.")+X("(No) estoy de acuerdo contigo.","أنا (لست) متفقًا معك.")+X("Me encantan los videojuegos, pero prefiero el fútbol.","أحب ألعاب الفيديو كثيرًا، لكنني أفضّل كرة القدم.")}],
+ ex:[["Hoy ___ enviado tres mensajes.",["he","ha","has"]],["¿Has ___ la película?",["visto","vido","veído"]],["El móvil es ___ práctico que el ordenador.",["más","tan","mejor"]],["Este equipo es ___ que el otro.",["mejor","más bueno","bien"]],["A mis amigos les ___ los videojuegos.",["encantan","encanta","encantamos"]]],
+ proj:"نقاش في القسم: هل شبكات التواصل مفيدة أم مضرّة؟ اكتب ثلاث حجج مع وثلاث ضد مستعملًا creo que و pienso que."},
+{n:6,es:"Viajar para conocer",ar:"السفر للاكتشاف",
+ goals:["يحكي رحلة في الماضي","يتحدث عن مشاريع سفر","يتعرّف على مدن إسبانيا وتراث الأندلس وأعيادها"],
+ vocab:[["el viaje","الرحلة"],["el billete","التذكرة"],["el avión","الطائرة"],["el tren","القطار"],["el barco","السفينة"],["el hotel","الفندق"],["la maleta","الحقيبة"],["el pasaporte","جواز السفر"],["la playa","الشاطئ"],["la montaña","الجبل"],["el monumento","المعلم الأثري"],["la mezquita","المسجد"],["el palacio","القصر"],["la fiesta","العيد / الحفل"],["la costumbre","العادة / التقليد"],["visitar","يزور"]],
+ gram:[
+  {t:"الماضي البسيط (pretérito indefinido)",b:`<p>لحدث انتهى في وقت محدد: <span class="es">ayer، la semana pasada، el año pasado، en 2024</span>. تدرّب على تصريفه في قسم «التصريف».</p>`+X("El verano pasado viajé a Andalucía con mi familia.","في الصيف الماضي سافرت إلى الأندلس مع عائلتي.")+X("Fuimos en barco de Orán a Almería.","ذهبنا بالسفينة من وهران إلى ألمرية.")+`<p class="note"><span class="es">ser</span> و<span class="es">ir</span> لهما نفس التصريف في هذا الزمن: <span class="es">fui، fuiste، fue...</span></p>`},
+  {t:"المستقبل",b:X("Voy a visitar Granada el año que viene.","سأزور غرناطة السنة القادمة. (ir a + مصدر)")+X("Viajaré a México en verano.","سأسافر إلى المكسيك في الصيف. (المستقبل البسيط)")+T(["","viajar"],[["yo","viajaré"],["tú","viajarás"],["él / ella","viajará"],["nosotros","viajaremos"],["vosotros","viajaréis"],["ellos","viajarán"]])},
+  {t:"الأندلس وكلمات عربية في الإسبانية",b:`<p>عاش المسلمون في شبه الجزيرة الإيبيرية نحو ثمانية قرون، وتركوا معالم مثل <span class="es">la Mezquita de Córdoba</span> و<span class="es">la Alhambra de Granada</span> و<span class="es">la Giralda de Sevilla</span>. ودخلت الإسبانية آلاف الكلمات العربية:</p>`+T(["الإسبانية","الأصل العربي"],[["el aceite","الزيت"],["el azúcar","السكّر"],["el arroz","الرزّ"],["la almohada","المخدّة"],["el alcalde","القاضي (صار معناها: رئيس البلدية)"],["la aldea","الضيعة"],["ojalá","لو شاء الله"]])}],
+ ex:[["El verano pasado ___ a Sevilla.",["fui","voy","iré"]],["Ayer mis padres ___ el museo.",["visitaron","visitan","visitarán"]],["El año que viene ___ a viajar a México.",["voy","fui","iba"]],["La Alhambra está en ___.",["Granada","Córdoba","Madrid"]],["La palabra «ojalá» viene del ___.",["árabe","latín","francés"]]],
+ proj:"اكتب بطاقة بريدية إلى صديق تحكي فيها رحلة في إسبانيا: من أين انطلقت، متى وصلت، كم بقيت، وماذا زرت."}
+];
+
+/* ---------- VOCAB ---------- */
+const VOCAB={
+ "التحية":[["hola","مرحبًا"],["buenos días","صباح الخير"],["buenas tardes","مساء الخير (بعد الظهر)"],["buenas noches","تصبح على خير / مساء الخير"],["adiós","وداعًا"],["hasta luego","إلى اللقاء"],["por favor","من فضلك"],["gracias","شكرًا"],["de nada","عفوًا"],["¿Cómo estás?","كيف حالك؟"],["me llamo...","اسمي..."],["mucho gusto","تشرّفنا"]],
+ "العائلة":[["el padre","الأب"],["la madre","الأم"],["el hermano","الأخ"],["la hermana","الأخت"],["el abuelo","الجد"],["la abuela","الجدة"],["el tío","العم / الخال"],["la tía","العمة / الخالة"],["el primo","ابن العم / ابن الخال"],["el hijo","الابن"],["la hija","البنت"],["los padres","الوالدان"]],
+ "الثانوية":[["el libro","الكتاب"],["el cuaderno","الكرّاس"],["el bolígrafo","القلم الجاف"],["el lápiz","قلم الرصاص"],["la mesa","الطاولة"],["la pizarra","السبورة"],["el profesor","الأستاذ"],["el alumno","التلميذ"],["la clase","القسم / الحصة"],["los deberes","الواجبات المنزلية"],["el examen","الامتحان"],["la asignatura","المادة الدراسية"]],
+ "الأيام والوقت":[["lunes","الإثنين"],["martes","الثلاثاء"],["miércoles","الأربعاء"],["jueves","الخميس"],["viernes","الجمعة"],["sábado","السبت"],["domingo","الأحد"],["hoy","اليوم"],["mañana","غدًا"],["ayer","أمس"],["la semana","الأسبوع"],["el fin de semana","عطلة نهاية الأسبوع"]],
+ "الطعام":[["el pan","الخبز"],["el agua","الماء"],["la leche","الحليب"],["el café","القهوة"],["la manzana","التفاحة"],["la naranja","البرتقالة"],["el pescado","السمك"],["la carne","اللحم"],["el arroz","الأرز"],["el queso","الجبن"],["el desayuno","فطور الصباح"],["la cena","العشاء"]],
+ "أفعال شائعة":[["hablar","يتكلم"],["comer","يأكل"],["vivir","يسكن / يعيش"],["estudiar","يدرس"],["escribir","يكتب"],["leer","يقرأ"],["beber","يشرب"],["trabajar","يعمل"],["aprender","يتعلم"],["viajar","يسافر"],["escuchar","يستمع"],["abrir","يفتح"]],
+ "الألوان والصفات":[["rojo","أحمر"],["azul","أزرق"],["verde","أخضر"],["amarillo","أصفر"],["blanco","أبيض"],["negro","أسود"],["grande","كبير"],["pequeño","صغير"],["alto","طويل القامة"],["bajo","قصير القامة"],["fácil","سهل"],["difícil","صعب"]]
+};
+UNITS.forEach(u=>{VOCAB["الوحدة "+u.n]=u.vocab});
+const ALL=[...new Map(Object.values(VOCAB).flat().map(w=>[w[0],w])).values()];
+let cat="الوحدة 1", deck=[], di=0;
+const catsEl=$("cats");
+Object.keys(VOCAB).forEach(c=>{const b=document.createElement("button");b.className="chip";b.textContent=c;b.setAttribute("aria-pressed",c===cat);
+  b.onclick=()=>{cat=c;[...catsEl.children].forEach(x=>x.setAttribute("aria-pressed",x===b));startDeck()};catsEl.appendChild(b)});
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function startDeck(){deck=shuffle(VOCAB[cat]);di=0;showCard()}
+function showCard(){const card=$("card");card.classList.remove("flip");
+  const total=VOCAB[cat].length, done=VOCAB[cat].filter(w=>known[w[0]]).length;
+  $("vbar").style.width=(done/total*100)+"%";
+  if(!deck.length){$("cEs").textContent="¡Muy bien!";$("cAr").textContent="أنهيت هذا الموضوع";$("cEs2").textContent="";$("vcount").textContent=done+" / "+total;return}
+  const w=deck[di%deck.length];$("cEs").textContent=w[0];$("cAr").textContent=w[1];$("cEs2").textContent=w[0];
+  $("vcount").textContent="حفظت "+done+" من "+total}
+$("card").addEventListener("click",()=>$("card").classList.toggle("flip"));
+$("card").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();$("card").classList.toggle("flip")}});
+$("say").onclick=()=>{if(deck.length)say(deck[di%deck.length][0])};
+$("again").onclick=()=>{if(!deck.length)return;di=(di+1)%deck.length;showCard()};
+$("gotit").onclick=()=>{if(!deck.length){startDeck();return}const w=deck.splice(di%deck.length,1)[0];if(!known[w[0]]){known[w[0]]=1;store.set("es_known",known);addPts(1)}if(di>=deck.length)di=0;showCard()};
+startDeck();
+
+/* ---------- CONJUGATION ---------- */
+const PRON=["yo","tú","él / ella / usted","nosotros / -as","vosotros / -as","ellos / ellas / ustedes"];
+const END={pres:{ar:["o","as","a","amos","áis","an"],er:["o","es","e","emos","éis","en"],ir:["o","es","e","imos","ís","en"]},
+           pret:{ar:["é","aste","ó","amos","asteis","aron"],er:["í","iste","ió","imos","isteis","ieron"],ir:["í","iste","ió","imos","isteis","ieron"]}};
+const REG=[["hablar","يتكلم"],["estudiar","يدرس"],["trabajar","يعمل"],["escuchar","يستمع"],["viajar","يسافر"],["cantar","يغني"],
+  ["comer","يأكل"],["beber","يشرب"],["aprender","يتعلم"],["correr","يجري"],["comprender","يفهم"],
+  ["vivir","يسكن"],["escribir","يكتب"],["abrir","يفتح"],["recibir","يستلم"],["subir","يصعد"],["compartir","يشارك"]];
+const IRR={pres:{
+  ser:["يكون (صفة دائمة)",["soy","eres","es","somos","sois","son"]],
+  estar:["يكون (حالة / مكان)",["estoy","estás","está","estamos","estáis","están"]],
+  tener:["يملك",["tengo","tienes","tiene","tenemos","tenéis","tienen"]],
+  ir:["يذهب",["voy","vas","va","vamos","vais","van"]],
+  hacer:["يفعل",["hago","haces","hace","hacemos","hacéis","hacen"]],
+  querer:["يريد",["quiero","quieres","quiere","queremos","queréis","quieren"]],
+  poder:["يستطيع",["puedo","puedes","puede","podemos","podéis","pueden"]],
+  salir:["يخرج",["salgo","sales","sale","salimos","salís","salen"]]},
+ pret:{
+  ser:["يكون",["fui","fuiste","fue","fuimos","fuisteis","fueron"]],
+  ir:["يذهب",["fui","fuiste","fue","fuimos","fuisteis","fueron"]],
+  estar:["يكون (حالة / مكان)",["estuve","estuviste","estuvo","estuvimos","estuvisteis","estuvieron"]],
+  tener:["يملك",["tuve","tuviste","tuvo","tuvimos","tuvisteis","tuvieron"]],
+  hacer:["يفعل",["hice","hiciste","hizo","hicimos","hicisteis","hicieron"]],
+  querer:["يريد",["quise","quisiste","quiso","quisimos","quisisteis","quisieron"]],
+  poder:["يستطيع",["pude","pudiste","pudo","pudimos","pudisteis","pudieron"]]}};
+function pool(){const t=$("tense").value,s=$("vset").value;
+  const reg=REG.map(([v,a])=>({v,a,forms:END[t][v.slice(-2)].map(e=>v.slice(0,-2)+e),irr:false}));
+  if(t==="pres")reg.push({v:"leer",a:"يقرأ",forms:["leo","lees","lee","leemos","leéis","leen"],irr:false});
+  const irr=Object.entries(IRR[t]).map(([v,[a,forms]])=>({v,a,forms,irr:true}));
+  return s==="reg"?reg:s==="irr"?irr:reg.concat(irr)}
+let cur=null,lastInput=null,scored=false;
+const plain=s=>s.normalize("NFD").replace(/[̀-́̈]/g,"").normalize("NFC").toLowerCase().trim();
+function newVerb(){const p=pool();let n;do{n=p[Math.floor(Math.random()*p.length)]}while(p.length>1&&cur&&n.v===cur.v);cur=n;scored=false;
+  $("vInf").textContent=cur.v;$("vAr").textContent=cur.a+(cur.irr?" — فعل شاذ":"");$("cmsg").textContent="";
+  $("conj").innerHTML=PRON.map((p,i)=>`<label><span class="pr">${p}</span><input id="cf${i}" autocomplete="off" autocapitalize="off" spellcheck="false" lang="es" aria-label="${p}"><span class="fix" id="fx${i}"></span></label>`).join("");
+  [...$("conj").querySelectorAll("input")].forEach((inp,i)=>{inp.addEventListener("focus",()=>lastInput=inp);
+    inp.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();const nx=$("cf"+(i+1));nx?nx.focus():check()}})});
+  renderEndings()}
+function check(){let good=0;cur.forms.forEach((f,i)=>{const inp=$("cf"+i),v=inp.value.trim().toLowerCase();inp.className="";$("fx"+i).textContent="";
+    if(v===f){inp.className="good";good++}else if(v&&plain(v)===plain(f)){inp.className="near";$("fx"+i).textContent=f}else{inp.className="wrong";$("fx"+i).textContent=f}});
+  $("cmsg").textContent=good===6?"¡Perfecto! 6/6":good+" / 6";$("cmsg").style.color=good===6?"var(--ok)":"var(--ink)";
+  if(!scored){addPts(good);scored=true}}
+$("check").onclick=check;
+$("show").onclick=()=>{cur.forms.forEach((f,i)=>{$("fx"+i).textContent=f});scored=true};
+$("nextVerb").onclick=newVerb;$("tense").onchange=newVerb;$("vset").onchange=newVerb;
+$("sayVerb").onclick=()=>say(cur.v+". "+cur.forms.join(", "));
+"á é í ó ú ñ ü ¿ ¡".split(" ").forEach(k=>{const b=document.createElement("button");b.textContent=k;b.type="button";
+  b.onmousedown=e=>e.preventDefault();
+  b.onclick=()=>{const t=lastInput||$("cf0");const s=t.selectionStart??t.value.length;t.value=t.value.slice(0,s)+k+t.value.slice(t.selectionEnd??s);t.focus();t.setSelectionRange(s+1,s+1)};$("keys").appendChild(b)});
+function renderEndings(){const t=$("tense").value,E=END[t];
+  $("endings").innerHTML=`<div class="tbl"><table><tr><th>الضمير</th><th class="es">-ar</th><th class="es">-er</th><th class="es">-ir</th></tr>${
+   PRON.map((p,i)=>`<tr><td class="es">${p}</td><td class="es">-${E.ar[i]}</td><td class="es">-${E.er[i]}</td><td class="es">-${E.ir[i]}</td></tr>`).join("")}</table></div>
+   <p class="note">${t==="pres"?"نحذف -ar / -er / -ir من المصدر ونضيف النهاية: <span class='es'>habl-ar → habl-o</span>.":"في الماضي البسيط تحمل صيغتا yo و él نبرة: <span class='es'>hablé, habló — comí, comió</span>."} صيغة <span class="es">vosotros</span> تُستعمل في إسبانيا للجمع المخاطَب.</p>`}
+newVerb();
+
+/* ---------- GRAMMAR ---------- */
+const G=[
+ {t:"أدوات التعريف والتنكير والجنس",b:`<p>كل اسم في الإسبانية مذكر أو مؤنث. غالبًا ما ينتهي المذكر بـ <span class="es">-o</span> والمؤنث بـ <span class="es">-a</span>.</p>
+  <div class="tbl"><table><tr><th></th><th class="es">مذكر</th><th class="es">مؤنث</th></tr>
+  <tr><td>معرّف مفرد</td><td class="es">el libro</td><td class="es">la mesa</td></tr>
+  <tr><td>معرّف جمع</td><td class="es">los libros</td><td class="es">las mesas</td></tr>
+  <tr><td>نكرة مفرد</td><td class="es">un libro</td><td class="es">una mesa</td></tr>
+  <tr><td>نكرة جمع</td><td class="es">unos libros</td><td class="es">unas mesas</td></tr></table></div>
+  <p class="note">استثناءات شائعة: <span class="es">el día، el problema، el mapa، la mano، la foto</span>.</p>`},
+ {t:"الفرق بين ser و estar",b:`<p><span class="es">ser</span> للهوية والصفات الدائمة: الاسم، الجنسية، المهنة، الشكل، الأصل.<br><span class="es">estar</span> للحالة المؤقتة والمكان: الشعور، الصحة، الموقع.</p>
+  <div class="ex"><span class="es">Soy argelino. Soy alumno.</span><span class="tr">أنا جزائري. أنا تلميذ.</span></div>
+  <div class="ex"><span class="es">Estoy cansado. Orán está en Argelia.</span><span class="tr">أنا متعب. وهران تقع في الجزائر.</span></div>
+  <p class="note">حيلة للحفظ: إن كان الجواب عن «أين؟» أو «كيف حالك الآن؟» فاستعمل <span class="es">estar</span>.</p>`},
+ {t:"الفعل gustar (أُحبّ / يعجبني)",b:`<p>يتفق الفعل مع الشيء المحبوب وليس مع الشخص: <span class="es">gusta</span> للمفرد أو للفعل، و<span class="es">gustan</span> للجمع.</p>
+  <div class="ex"><span class="es">Me gusta el fútbol. Me gusta leer.</span><span class="tr">تعجبني كرة القدم. أحب القراءة.</span></div>
+  <div class="ex"><span class="es">Me gustan los idiomas.</span><span class="tr">تعجبني اللغات.</span></div>
+  <div class="tbl"><table><tr><th class="es">me</th><th class="es">te</th><th class="es">le</th><th class="es">nos</th><th class="es">os</th><th class="es">les</th></tr>
+  <tr><td>لي</td><td>لك</td><td>له / لها</td><td>لنا</td><td>لكم</td><td>لهم</td></tr></table></div>`},
+ {t:"hay أو está (يوجد)",b:`<p><span class="es">hay</span> لشيء نذكره لأول مرة (مع <span class="es">un/una</span> أو عدد أو بلا أداة). <span class="es">está / están</span> لشيء معروف (مع <span class="es">el/la</span>).</p>
+  <div class="ex"><span class="es">Hay un libro en la mesa.</span><span class="tr">يوجد كتاب على الطاولة.</span></div>
+  <div class="ex"><span class="es">El libro está en la mesa.</span><span class="tr">الكتاب موجود على الطاولة.</span></div>`},
+ {t:"أدوات الاستفهام",b:`<p>تُكتب كل كلمة استفهام بنبرة، ويُفتح السؤال بعلامة مقلوبة <span class="es">¿</span> ويُغلق بـ <span class="es">?</span>.</p>
+  <div class="tbl"><table><tr><td class="es">¿Qué?</td><td>ماذا / ما</td><td class="es">¿Quién?</td><td>من</td></tr>
+  <tr><td class="es">¿Dónde?</td><td>أين</td><td class="es">¿Cuándo?</td><td>متى</td></tr>
+  <tr><td class="es">¿Cómo?</td><td>كيف</td><td class="es">¿Por qué?</td><td>لماذا</td></tr>
+  <tr><td class="es">¿Cuánto?</td><td>كم</td><td class="es">¿Cuál?</td><td>أيّ</td></tr></table></div>
+  <div class="ex"><span class="es">¿Dónde vives? — Vivo en Argel.</span><span class="tr">أين تسكن؟ — أسكن في الجزائر العاصمة.</span></div>`},
+ {t:"النطق: ميزة المتكلم بالعربية",b:`<p>العربية تساعدك كثيرًا في النطق الإسباني، فعدة أصوات موجودة عندنا:</p>
+  <div class="tbl"><table><tr><th>الحرف</th><th>ينطق مثل</th><th>مثال</th></tr>
+  <tr><td class="es">j / ge / gi</td><td>خ</td><td class="es">jamón, gente</td></tr>
+  <tr><td class="es">z / ce / ci</td><td>ث (في إسبانيا)</td><td class="es">zapato, cine</td></tr>
+  <tr><td class="es">ñ</td><td>ني</td><td class="es">España, niño</td></tr>
+  <tr><td class="es">ll / y</td><td>ي</td><td class="es">llamar, yo</td></tr>
+  <tr><td class="es">rr</td><td>راء مكرّرة قوية</td><td class="es">perro</td></tr>
+  <tr><td class="es">h</td><td>لا تُنطق</td><td class="es">hola, hablar</td></tr>
+  <tr><td class="es">v</td><td>ب</td><td class="es">vivir, vamos</td></tr></table></div>
+  <p class="note">تأثير الفرنسية: لا تنطق <span class="es">u</span> مثل الفرنسية، بل «و» صريحة: <span class="es">mucho</span>. والحرف <span class="es">e</span> يُنطق دائمًا «إ» واضحة.</p>`}
+];
+$("grammar").innerHTML=G.map((g,i)=>`<details class="g"${i===0?" open":""}><summary>${g.t}</summary><div class="body">${g.b}</div></details>`).join("");
+$("grammar").addEventListener("click",e=>{const s=e.target.closest(".es");if(s&&!e.target.closest("summary"))say(s.textContent)});
+
+/* ---------- READING ---------- */
+const TEXT=["Hola, me llamo Yacine y tengo diecisiete años.","Soy argelino y vivo en Orán con mi familia.","Estudio en el instituto, en segundo curso de lenguas extranjeras.","Mi asignatura favorita es el español porque es una lengua bonita y muy útil.","Por la mañana voy al instituto en autobús.","Por la tarde hago los deberes y los fines de semana juego al fútbol con mis amigos.","En el futuro quiero viajar a España y visitar Granada para ver la Alhambra."];
+const TR="مرحبًا، اسمي ياسين وعمري سبعة عشر عامًا. أنا جزائري وأسكن في وهران مع عائلتي. أدرس في الثانوية، في السنة الثانية لغات أجنبية. مادتي المفضلة هي الإسبانية لأنها لغة جميلة ومفيدة جدًا. في الصباح أذهب إلى الثانوية بالحافلة. في المساء أنجز واجباتي، وفي عطل نهاية الأسبوع ألعب كرة القدم مع أصدقائي. في المستقبل أريد السفر إلى إسبانيا وزيارة غرناطة لرؤية قصر الحمراء.";
+$("rtext").innerHTML=`<span class="es" lang="es">${TEXT.join(" ")}</span>`;
+$("rtr").textContent=TR;
+$("trBtn").onclick=()=>{const h=$("rtr").hidden;$("rtr").hidden=!h;$("trBtn").textContent=h?"أخفِ الترجمة":"أظهر الترجمة"};
+$("sayText").onclick=()=>say(TEXT.join(" "));
+const RQ=[["¿Cuántos años tiene Yacine?",["quince","diecisiete","diecinueve"],1],
+  ["¿Dónde vive?",["en Argel","en Granada","en Orán"],2],
+  ["¿Cuál es su asignatura favorita?",["el español","el francés","las matemáticas"],0],
+  ["¿Cómo va al instituto?",["a pie","en autobús","en coche"],1],
+  ["¿Qué quiere visitar en el futuro?",["la Alhambra","el Museo del Prado","Barcelona"],0]];
+$("rqs").innerHTML=RQ.map((q,i)=>`<div class="q"><span class="es" lang="es">${i+1}. ${q[0]}</span><div class="opts" data-q="${i}">${q[1].map((o,j)=>`<button class="opt" data-j="${j}" lang="es">${o}</button>`).join("")}</div></div>`).join("");
+$("rqs").addEventListener("click",e=>{const b=e.target.closest(".opt");if(!b)return;const box=b.parentElement,q=RQ[+box.dataset.q];if(box.dataset.done)return;
+  const right=+b.dataset.j===q[2];b.classList.add(right?"good":"wrong");if(right){box.dataset.done=1;addPts(1)}else{box.children[q[2]].classList.add("good");box.dataset.done=1}});
+const CHECKS=[["التحية (Hola)",/\bhola\b/i],["الاسم (me llamo)",/me llamo/i],["العمر (tengo ... años)",/tengo .*años/i],["الجنسية (soy argelino/a)",/soy argelin[oa]/i],["السكن (vivo en)",/vivo en/i],["ما تحبه (me gusta)",/me gusta/i],["المستقبل (quiero)",/quiero/i]];
+function renderEssay(){const v=$("essay").value;$("essayCheck").innerHTML=CHECKS.map(([l,r])=>`<li class="${r.test(v)?"done":""}">${l}</li>`).join("");store.set("es_essay",v)}
+$("essay").value=store.get("es_essay","");$("essay").addEventListener("input",renderEssay);renderEssay();
+
+/* ---------- QUIZ ---------- */
+let qz=[],qi=0,qs=0;
+function startQuiz(){qz=shuffle(ALL).slice(0,10).map(w=>{const toAr=Math.random()<.5;const wrong=shuffle(ALL.filter(x=>x!==w)).slice(0,3);return{w,toAr,opts:shuffle([w,...wrong])}});qi=0;qs=0;renderQ()}
+function renderQ(){const box=$("quizBox");
+  if(qi>=qz.length){const msg=qs>=9?"¡Excelente!":qs>=6?"¡Muy bien!":"¡Sigue practicando!";
+    box.innerHTML=`<h2>النتيجة</h2><div class="big">${qs} / 10</div><p class="es" lang="es" style="font-size:1.3rem">${msg}</p><div class="row"><button class="btn" id="qre">اختبار جديد</button></div>`;$("qre").onclick=startQuiz;return}
+  const q=qz[qi];
+  box.innerHTML=`<div class="row" style="justify-content:space-between"><h2>اختبار المفردات</h2><span class="counter">السؤال ${qi+1} من 10 · الصحيح: ${qs}</span></div>
+   <div class="bar"><i style="width:${qi*10}%"></i></div>
+   <p class="hint">${q.toAr?"ما معنى هذه الكلمة؟":"كيف نقول هذا بالإسبانية؟"}</p>
+   <div class="quiz-q ${q.toAr?"es":""}" ${q.toAr?'lang="es"':""}>${esc(q.toAr?q.w[0]:q.w[1])}</div>
+   <div class="quiz-opts">${q.opts.map((o,j)=>`<button class="opt ${q.toAr?"":"es-o"}" data-j="${j}">${esc(q.toAr?o[1]:o[0])}</button>`).join("")}</div>`;
+  if(q.toAr)say(q.w[0]);
+  box.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{if(box.dataset.lock==="1")return;box.dataset.lock="1";
+    const ok=q.opts[+b.dataset.j]===q.w;b.classList.add(ok?"good":"wrong");
+    if(ok){qs++;addPts(1)}else box.querySelectorAll(".opt")[q.opts.indexOf(q.w)].classList.add("good");
+    if(!q.toAr)say(q.w[0]);
+    setTimeout(()=>{box.dataset.lock="0";qi++;renderQ()},1100)});}
+startQuiz();
+/* ---------- UNIT VIEW ---------- */
+let unitDone=store.get("es_units",{}), curUnit=store.get("es_unit",1);
+function renderUnitChips(){$("unitChips").innerHTML=UNITS.map(u=>`<button class="chip" data-u="${u.n}" aria-pressed="${u.n===curUnit}">${u.n===0?"تمهيدية":"الوحدة "+u.n}${unitDone[u.n]?" ✓":""}</button>`).join("")}
+$("unitChips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;curUnit=+b.dataset.u;store.set("es_unit",curUnit);renderUnitChips();renderUnit()});
+function renderUnit(){const u=UNITS.find(x=>x.n===curUnit)||UNITS[1];
+  $("unitBox").innerHTML=`<header class="unit-head"><div class="eyebrow es" lang="es">${u.n===0?"Unidad preparatoria":"Unidad "+u.n}</div><h2 class="es" lang="es">${u.es}</h2><p>${u.ar}</p></header>
+   <div><h3>ماذا سأتعلم؟</h3><ul class="goals">${u.goals.map(g=>`<li>${g}</li>`).join("")}</ul></div>
+   <div style="display:grid;gap:10px"><div class="row" style="justify-content:space-between"><h3>المفردات</h3><button class="btn ghost" id="toCards">راجعها بالبطاقات</button></div>
+     <p class="hint">اضغط على أي كلمة لسماع نطقها.</p>
+     <div class="words">${u.vocab.map(([es,ar])=>`<button class="word" data-say="${esc(es)}"><span class="es" lang="es">${esc(es)}</span><span class="ar">${esc(ar)}</span></button>`).join("")}</div></div>
+   <div style="display:grid;gap:10px"><h3>القواعد</h3>${u.gram.map((g,i)=>`<details class="g"${i===0?" open":""}><summary>${g.t}</summary><div class="body">${g.b}</div></details>`).join("")}</div>
+   <div style="display:grid;gap:6px"><div class="row" style="justify-content:space-between"><h3>تمرين: اختر الكلمة المناسبة</h3><span class="counter" id="uScore"></span></div>
+     ${u.ex.map((q,i)=>`<div class="ex-q"><span class="es" lang="es">${i+1}. ${q[0]}</span><div class="opts" data-i="${i}">${shuffle(q[1].map((o,j)=>[o,j])).map(([o,j])=>`<button class="opt" data-j="${j}" lang="es">${o}</button>`).join("")}</div></div>`).join("")}</div>
+   <div class="proj"><b>المشروع:</b> ${u.proj}</div>`;
+  let right=0,answered=0;
+  $("toCards").onclick=()=>{cat="الوحدة "+u.n;[...catsEl.children].forEach(x=>x.setAttribute("aria-pressed",x.textContent===cat));startDeck();openTab($("t-vocab"))};
+  $("unitBox").querySelectorAll(".word").forEach(w=>w.onclick=()=>say(w.dataset.say));
+  $("unitBox").querySelectorAll(".body .es").forEach(s=>{s.style.cursor="pointer";s.onclick=()=>say(s.textContent)});
+  $("unitBox").querySelectorAll(".opts").forEach(box=>box.addEventListener("click",e=>{const b=e.target.closest(".opt");if(!b||box.dataset.done)return;box.dataset.done=1;answered++;
+    const ok=b.dataset.j==="0";b.classList.add(ok?"good":"wrong");if(ok){right++;addPts(1)}else box.querySelector('[data-j="0"]').classList.add("good");
+    $("uScore").textContent=right+" / "+u.ex.length;
+    if(answered===u.ex.length&&right>=4&&!unitDone[u.n]){unitDone[u.n]=1;store.set("es_units",unitDone);renderUnitChips()}}));
+}
+renderUnitChips();renderUnit();
+/* ---------- EXAMS (one per term, bac-style: comprensión / competencia lingüística / expresión escrita) ---------- */
+const TF=(q,a)=>({type:"mc",q,opts:a?["Verdadero","Falso"]:["Falso","Verdadero"],keep:true,pts:.5});
+const MC=(q,opts,pts=1)=>({type:"mc",q,opts,pts});
+const IN=(q,a,pts=1)=>({type:"in",q,a:[].concat(a),pts});
+const EXAMS=[
+{id:"t1",term:"الفصل الأول",units:"الوحدات 0 – 2",title:"Lina y su mundo",
+ text:"Me llamo Lina y tengo dieciséis años. Vivo en Tlemcen, una ciudad bonita del oeste de Argelia. Estudio en el instituto Ibn Jaldún, en segundo curso de lenguas extranjeras. Mi instituto es grande: tiene veinte aulas, dos laboratorios, una biblioteca y un patio con árboles. Mis compañeros son simpáticos y trabajadores. Mi mejor amiga se llama Sara; es alta, morena y tiene los ojos verdes. Vivimos en el mismo barrio, cerca del mercado. En mi familia somos cinco: mis padres, mis dos hermanos y yo. Mi padre es médico y mi madre es profesora de francés. Nuestro piso tiene tres dormitorios, un salón, una cocina y un baño. Por la tarde, después de las clases, hago los deberes en mi dormitorio.",
+ parts:[
+  {t:"Comprensión del texto",pts:7,groups:[
+   {t:"A. Verdadero o falso",items:[TF("Lina vive en Orán.",false),TF("El instituto tiene una biblioteca.",true),TF("Sara tiene los ojos negros.",false),TF("La madre de Lina es profesora.",true)]},
+   {t:"B. Elige la respuesta correcta",items:[MC("¿Cuántos años tiene Lina?",["dieciséis","quince","diecisiete"]),MC("¿Dónde viven Lina y Sara?",["cerca del mercado","lejos del instituto","en Orán"]),MC("¿Cuántas personas hay en la familia de Lina?",["cinco","cuatro","tres"])]},
+   {t:"C. Busca en el texto",items:[IN("El contrario de «pequeño»:","grande"),IN("El contrario de «baja»:","alta")]}]},
+  {t:"Competencia lingüística",pts:7,groups:[
+   {t:"A. Conjuga los verbos en presente",items:[IN("Lina (estudiar) ___ en el instituto.","estudia",.75),IN("Nosotros (vivir) ___ en Tlemcen.","vivimos",.75),IN("Yo (tener) ___ dieciséis años.","tengo",.75),IN("Mis compañeros (ser) ___ simpáticos.","son",.75)]},
+   {t:"B. Elige la forma correcta",items:[MC("___ padres trabajan mucho.",["Mis","Mi","Tu"],.5),MC("El mercado ___ cerca de mi casa.",["está","es","hay"],.5),MC("En el instituto ___ dos laboratorios.",["hay","están","son"],.5),MC("La clase empieza a las ocho y ___.",["media","medio","mitad"],.5)]},
+   {t:"C. Pon en plural",items:[IN("el alumno simpático →","los alumnos simpáticos"),IN("la profesora joven →","las profesoras jóvenes")]}]}],
+ write:{prompt:"Presenta a tu familia y describe tu casa en 6 a 8 líneas.",
+  check:[["تقديم العائلة (mi familia / somos)",/mi familia|somos/i],["أفراد العائلة (mi padre / mi madre / hermano)",/mi padre|mi madre|herman[oa]/i],["الوصف بـ ser أو tener",/\b(es|son|tiene|tienen)\b/i],["المكان (vivo / vivimos / hay)",/\b(vivo|vivimos|hay)\b/i],["غرف البيت",/dormitorio|cocina|sal[oó]n|baño/i],["40 كلمة على الأقل",40]],
+  model:"En mi familia somos seis: mis padres, mis tres hermanos y yo. Mi padre se llama Ahmed; es alto y muy trabajador. Mi madre es simpática y tiene los ojos negros. Vivimos en Blida, en un piso grande cerca del instituto. En nuestro piso hay cuatro dormitorios, un salón, una cocina y dos baños. Mi habitación favorita es el salón porque allí hablamos y comemos juntos."}},
+{id:"t2",term:"الفصل الثاني",units:"الوحدتان 3 – 4",title:"Un día de Karim",
+ text:"Me llamo Karim. Todos los días me levanto a las seis y media, me ducho y desayuno con mi familia: pan, aceite de oliva y un vaso de leche. Después me visto y voy al instituto a pie. Las clases empiezan a las ocho y vuelvo a casa a las cinco. Los sábados voy al mercado con mi madre. Allí compramos frutas y verduras. Las naranjas son baratas, pero la carne es cara. Esta semana estoy enfermo: me duele la garganta y tengo fiebre. El médico dice que tengo que descansar y beber mucha agua. También dice que hay que comer fruta y hacer deporte para estar sano. En mi instituto, los alumnos reciclan el papel y el plástico porque quieren proteger el medio ambiente.",
+ parts:[
+  {t:"Comprensión del texto",pts:7,groups:[
+   {t:"A. Verdadero o falso",items:[TF("Karim se levanta a las siete.",false),TF("Karim va al instituto en autobús.",false),TF("Las naranjas son baratas.",true),TF("Esta semana Karim tiene fiebre.",true)]},
+   {t:"B. Elige la respuesta correcta",items:[MC("¿Qué desayuna Karim?",["pan, aceite y leche","café y queso","arroz y pescado"]),MC("¿Qué le duele a Karim?",["la garganta","la cabeza","el estómago"]),MC("¿Qué reciclan los alumnos?",["el papel y el plástico","el agua","la ropa"])]},
+   {t:"C. Busca en el texto",items:[IN("El contrario de «barata»:","cara"),IN("Un sinónimo de «doctor»:",["médico","el médico"])]}]},
+  {t:"Competencia lingüística",pts:7,groups:[
+   {t:"A. Conjuga los verbos en presente",items:[IN("Yo (levantarse) ___ temprano.","me levanto",.75),IN("Las clases (empezar) ___ a las ocho.","empiezan",.75),IN("Nosotros (volver) ___ a casa a las cinco.","volvemos",.75),IN("Mi hermano (vestirse) ___ rápido.","se viste",.75)]},
+   {t:"B. Elige la forma correcta",items:[MC("Me ___ los pies.",["duelen","duele","dolor"],.5),MC("¿Cuánto ___ un kilo de naranjas?",["cuesta","cuestan","costa"],.5),MC("Para estar sano ___ dormir bien.",["hay que","hay","tiene"],.5),MC("Tú ___ que estudiar más.",["tienes","hay","debes"],.5)]},
+   {t:"C. Pon el verbo en imperativo (tú)",items:[IN("(reciclar) ¡___ el plástico!","recicla"),IN("(hacer) ¡___ deporte!","haz")]}]}],
+ write:{prompt:"Escribe 6 a 8 líneas con consejos para cuidar la salud y proteger el planeta.",
+  check:[["الواجب العام (hay que)",/hay que/i],["الواجب الشخصي (tienes que / debes)",/tienes que|debes|tenemos que|debemos/i],["فعل أمر واحد على الأقل",/\b(recicla|come|bebe|haz|apaga|ahorra|camina|duerme|cuida|protege|usa)\b/i],["الصحة (salud / sano)",/salud|san[oa]/i],["البيئة (planeta / medio ambiente)",/planeta|medio ambiente|naturaleza/i],["40 كلمة على الأقل",40]],
+  model:"Para estar sanos, hay que comer fruta y verdura todos los días. También tenemos que beber mucha agua y dormir ocho horas. Haz deporte tres veces por semana y camina al instituto. Para proteger el planeta, debes reciclar el papel y el plástico. ¡Apaga la luz cuando sales de tu habitación y ahorra agua! Si cuidamos el medio ambiente, cuidamos también nuestra salud."}},
+{id:"t3",term:"الفصل الثالث",units:"الوحدتان 5 – 6",title:"El viaje de Yasmina",
+ text:"El verano pasado, Yasmina viajó a España con sus padres. Fueron en barco de Orán a Alicante y después tomaron el tren a Granada. Allí visitaron la Alhambra, un palacio construido en la época de al-Ándalus. Yasmina hizo muchas fotos con su móvil y las compartió en las redes sociales. Sus amigos escribieron muchos comentarios. Según Yasmina, viajar es más interesante que ver vídeos en internet, porque así conoces otras culturas y costumbres. Este año ha estudiado mucho y ha aprobado todos sus exámenes. El año que viene va a visitar Córdoba para ver la famosa Mezquita.",
+ parts:[
+  {t:"Comprensión del texto",pts:7,groups:[
+   {t:"A. Verdadero o falso",items:[TF("Yasmina viajó sola.",false),TF("Fueron a Granada en tren.",true),TF("Yasmina prefiere ver vídeos en internet.",false),TF("Yasmina ha aprobado sus exámenes.",true)]},
+   {t:"B. Elige la respuesta correcta",items:[MC("¿Cómo fueron de Orán a Alicante?",["en barco","en avión","en coche"]),MC("¿Qué monumento visitaron en Granada?",["la Alhambra","la Mezquita","la Giralda"]),MC("¿Qué ciudad va a visitar el año que viene?",["Córdoba","Sevilla","Madrid"])]},
+   {t:"C. Busca en el texto",items:[IN("Un verbo en pretérito perfecto:",["ha estudiado","ha aprobado"]),IN("El contrario de «aburrido»:","interesante")]}]},
+  {t:"Competencia lingüística",pts:7,groups:[
+   {t:"A. Conjuga los verbos en el tiempo correcto",items:[IN("Ayer yo (visitar) ___ el museo.","visité",.75),IN("El año pasado nosotros (ir) ___ a Túnez.","fuimos",.75),IN("Mis padres (hacer) ___ un viaje en 2024.","hicieron",.75),IN("Hoy yo (enviar) ___ tres mensajes.","he enviado",.75)]},
+   {t:"B. Elige la forma correcta",items:[MC("El avión es ___ rápido que el tren.",["más","tan","mejor"],.5),MC("Viajar es ___ que quedarse en casa.",["mejor","más bueno","bien"],.5),MC("El año que viene ___ a visitar México.",["voy","fui","he"],.5),MC("¿Has ___ la Alhambra?",["visto","vido","ver"],.5)]},
+   {t:"C. Completa",items:[IN("(viajar, futuro) Yo ___ a España en 2027.","viajaré"),IN("(escribir) Hoy he ___ una postal.","escrito")]}]}],
+ write:{prompt:"Escribe una postal (6 a 8 líneas) a un amigo para contarle un viaje.",
+  check:[["التحية (Querido / Hola)",/querid[oa]|hola/i],["أفعال في الماضي (fui, visité...)",/\b(fui|fuimos|visit[eé]|visitamos|viaj[eé]|viajamos|lleg[uú][eé]|llegamos|com[ií]|comimos)\b/i],["وسيلة النقل",/barco|avi[oó]n|tren|coche|autob[uú]s/i],["مدينة أو معلم",/granada|sevilla|c[oó]rdoba|madrid|barcelona|alhambra|mezquita|monumento|museo/i],["الختام (Un abrazo / Hasta pronto)",/abrazo|besos|hasta pronto|saludos/i],["40 كلمة على الأقل",40]],
+  model:"¡Hola, Samir! Te escribo desde Sevilla. Llegamos el lunes en avión desde Argel. Ayer visitamos la Giralda y el Alcázar: ¡son monumentos preciosos! También fuimos en tren a Córdoba para ver la Mezquita. La comida es muy buena y la gente es simpática. Vamos a volver a casa el sábado. ¡Hasta pronto! Un abrazo, Nadir."}}
+];
+const norm=s=>String(s).toLowerCase().replace(/[.,;:!¡?¿«»"]/g,"").replace(/\s+/g," ").trim();
+let exBest=store.get("es_exbest",{}), curExam=null;
+function renderExamList(){
+  $("examBox").innerHTML=`<div class="exam-list">${EXAMS.map(e=>`<button class="exam-card" data-e="${e.id}">
+    <span class="eyebrow">${e.term} · ${e.units}</span><span class="es" lang="es">${e.title}</span>
+    <span class="hint">${exBest[e.id]!=null?"أفضل نتيجة: "+exBest[e.id]+" / 20":"لم يُجرَ بعد"}</span></button>`).join("")}</div>
+   <p class="note">كل اختبار على منوال اختبارات الفصل: نص للفهم (7 نقاط)، كفاءة لغوية (7 نقاط)، تعبير كتابي (6 نقاط). المدة المقترحة: ساعة ونصف. أجب عن كل الأسئلة ثم اضغط «صحّح الاختبار».</p>`;
+  $("examBox").querySelectorAll(".exam-card").forEach(b=>b.onclick=()=>{curExam=EXAMS.find(e=>e.id===b.dataset.e);renderExam()});
+}
+function renderExam(){const e=curExam;let k=0;
+  const item=it=>{const id=e.id+"-"+(k++);it._id=id;
+    if(it.type==="mc"){const o=it.keep?it.opts.map((x,j)=>[x,j]).sort((a,b)=>a[0]==="Verdadero"?-1:1):shuffle(it.opts.map((x,j)=>[x,j]));
+      return `<div class="ex-q"><span class="es" lang="es">${esc(it.q)}</span><div class="opts" data-id="${id}">${o.map(([x,j])=>`<button class="opt" data-j="${j}" lang="es" aria-pressed="false">${esc(x)}</button>`).join("")}</div><span class="fb" id="fb-${id}"></span></div>`}
+    return `<div class="ex-q"><label class="in-q" for="in-${id}"><span class="es" lang="es">${esc(it.q)}</span><input id="in-${id}" lang="es" autocomplete="off" autocapitalize="off" spellcheck="false"></label><span class="fb" id="fb-${id}"></span></div>`};
+  $("examBox").innerHTML=`<div class="row" style="justify-content:space-between"><button class="btn ghost" id="exBack">← كل الاختبارات</button><span class="counter">${e.term} · ${e.units}</span></div>
+   <header class="unit-head"><div class="eyebrow">Examen del ${e.term}</div><h2 class="es" lang="es">${e.title}</h2></header>
+   <div class="row" style="justify-content:space-between"><h3>النص</h3><button class="spk" id="exSay" aria-label="استمع للنص"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06A9 9 0 0 0 14 3.23z"/></svg></button></div>
+   <p class="text es" lang="es">${e.text}</p>
+   ${e.parts.map(p=>`<section class="ex-part"><h3><span class="es" lang="es">${p.t}</span> <span class="pts">(${p.pts} ن)</span></h3>${p.groups.map(g=>`<div class="ex-group"><h4 class="es" lang="es">${g.t}</h4>${g.items.map(item).join("")}</div>`).join("")}</section>`).join("")}
+   <section class="ex-part"><h3><span class="es" lang="es">Expresión escrita</span> <span class="pts">(6 ن)</span></h3>
+     <p class="es" lang="es" style="font-weight:600">${e.write.prompt}</p>
+     <div class="keys" id="exKeys"></div>
+     <textarea id="w-${e.id}" lang="es" placeholder="Escribe aquí..."></textarea>
+     <div class="row" style="justify-content:space-between"><span class="hint" id="wc"></span></div>
+     <ul class="check" id="wcheck"></ul>
+     <details class="g" id="modelBox" hidden><summary>نموذج للتعبير الكتابي</summary><div class="body"><p class="es" lang="es">${e.write.model}</p></div></details></section>
+   <div class="row"><button class="btn" id="exGrade">صحّح الاختبار</button><button class="btn ghost" id="exReset">أعد الاختبار</button></div>
+   <div id="exResult" aria-live="polite"></div>`;
+  $("exBack").onclick=renderExamList;$("exSay").onclick=()=>say(e.text);
+  $("examBox").querySelectorAll(".opts").forEach(box=>box.addEventListener("click",ev=>{const b=ev.target.closest(".opt");if(!b||box.dataset.locked)return;box.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",x===b))}));
+  const ta=$("w-"+e.id);let lastF=ta;ta.value=store.get("es_w_"+e.id,"");
+  $("examBox").querySelectorAll("input,textarea").forEach(x=>x.addEventListener("focus",()=>lastF=x));
+  "á é í ó ú ñ ¿ ¡".split(" ").forEach(c=>{const b=document.createElement("button");b.type="button";b.textContent=c;b.onmousedown=v=>v.preventDefault();
+    b.onclick=()=>{const s=lastF.selectionStart??lastF.value.length;lastF.value=lastF.value.slice(0,s)+c+lastF.value.slice(lastF.selectionEnd??s);lastF.focus();lastF.setSelectionRange(s+1,s+1);lastF.dispatchEvent(new Event("input"))};$("exKeys").appendChild(b)});
+  const words=v=>(v.match(/[a-záéíóúñü]+/gi)||[]).length;
+  const wScore=()=>{const v=ta.value;let s=0;$("wcheck").innerHTML=e.write.check.map(([l,r])=>{const ok=typeof r==="number"?words(v)>=r:r.test(v);if(ok)s++;return `<li class="${ok?"done":""}">${l.replace(/\(([^)]*)\)/,'<span class="es" lang="es">($1)</span>')}</li>`}).join("");$("wc").textContent="عدد الكلمات: "+words(v);return s};
+  ta.addEventListener("input",()=>{store.set("es_w_"+e.id,ta.value);wScore()});wScore();
+  $("exGrade").onclick=()=>{const all=e.parts.flatMap(p=>p.groups.flatMap(g=>g.items));let obj=0,miss=0;
+    all.forEach(it=>{const fb=$("fb-"+it._id);fb.className="fb";
+      if(it.type==="mc"){const box=document.querySelector(`.opts[data-id="${it._id}"]`);box.dataset.locked=1;const sel=box.querySelector('[aria-pressed="true"]');
+        box.querySelector('[data-j="0"]').classList.add("good");
+        if(!sel){miss++;fb.textContent="لم تُجب";fb.classList.add("bad")}else if(sel.dataset.j==="0"){obj+=it.pts}else{sel.classList.add("wrong")}}
+      else{const inp=$("in-"+it._id);inp.readOnly=true;const v=norm(inp.value);
+        if(!v){miss++;inp.className="wrong";fb.textContent="الجواب: "+it.a[0];fb.classList.add("bad")}
+        else if(it.a.some(a=>norm(a)===v)){inp.className="good";obj+=it.pts}
+        else if(it.a.some(a=>plain(norm(a))===plain(v))){inp.className="near";obj+=it.pts/2;fb.textContent="انتبه للنبرة: "+it.a[0];fb.classList.add("warn")}
+        else{inp.className="wrong";fb.textContent="الجواب: "+it.a[0];fb.classList.add("bad")}}});
+    const w=wScore(), total=Math.round((obj+w)*4)/4;
+    exBest[e.id]=Math.max(exBest[e.id]??0,total);store.set("es_exbest",exBest);addPts(Math.round(total));
+    $("modelBox").hidden=false;$("exGrade").disabled=true;
+    const mention=total>=16?"ممتاز — ¡Excelente!":total>=14?"جيد جدًا — ¡Muy bien!":total>=12?"جيد — ¡Bien!":total>=10?"مقبول — Aprobado":"يحتاج إلى مراجعة — ¡Ánimo!";
+    $("exResult").innerHTML=`<div class="result"><div class="big">${total} / 20</div><p><b>${mention}</b></p>
+      <div class="tbl"><table><tr><th>الجزء</th><th>العلامة</th></tr><tr><td>الفهم والكفاءة اللغوية</td><td>${Math.round(obj*4)/4} / 14</td></tr><tr><td>التعبير الكتابي (تقدير آلي)</td><td>${w} / 6</td></tr></table></div>
+      <p class="hint">علامة التعبير الكتابي تقديرية: الدفتر يتحقق فقط من وجود العناصر المطلوبة. اطلب من الأستاذ تصحيح الأخطاء، وقارن فقرتك بالنموذج.${miss?" أسئلة بلا جواب: "+miss+".":""}</p></div>`;
+    $("exResult").scrollIntoView({behavior:"smooth",block:"center"})};
+  $("exReset").onclick=()=>renderExam();
+  window.scrollTo({top:0});
+}
+renderExamList();
+renderStats();
+})();
+</script>
